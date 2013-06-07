@@ -55,6 +55,30 @@
       }
     }
 
+    public function student_view($id) {
+      $user = $this->session->userdata('type');
+      if (!$user || $user !="student") {
+	redirect(site_url('unauthorized'));
+      }
+      $classes = $this->class_model->get_classes_by_student($this->session->userdata('user_id'));
+      $auth = false;
+      foreach($classes as $class) {
+	if ($class['id'] == $id) {
+	  $auth = true;
+	}
+      }
+      if ($auth) {
+	$data['title'] = "View Class";
+	$data['class'] = $this->class_model->get_classes($id);
+	$data['assignments'] = $this->assignment_model->get_assignments_by_class($id);
+	$this->load->view('templates/header', $data);
+	$this->load->view('classes/student_view', $data);
+	$this->load->view('templates/footer');
+      } else {
+	redirect(site_url('unauthorized'));
+      }
+    }
+
     public function add_student($id) {
       //TODO: csrf 
       

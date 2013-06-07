@@ -5,7 +5,8 @@
   }
 
   function upload_path() {
-    return $_SERVER['DOCUMENT_ROOT'].'/uploads/';
+    return dirname(dirname(dirname(__FILE__))). '/uploads/';
+    //return $_SERVER['DOCUMENT_ROOT'].'/uploads/';
   }
 
   function view_url() {
@@ -15,4 +16,6 @@
   function base_path($path) {
     return base_url().$path;
   }
+
+  date_default_timezone_set('America/Phoenix');
 ?>

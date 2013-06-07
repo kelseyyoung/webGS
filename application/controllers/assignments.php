@@ -63,6 +63,7 @@
           //Upload java file
           if (! $this->upload->do_upload('testcase_file')) {
             //Error uploading file
+	    echo upload_path();
             $data['upload_errors'] = $this->upload->display_errors();
             $this->load->view('templates/header', $data);
             $this->load->view('assignments/create', $data);

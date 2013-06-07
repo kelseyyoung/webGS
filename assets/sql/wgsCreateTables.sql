@@ -27,7 +27,6 @@ CREATE TABLE `wgsDB_assignment` (
     `startDateTime` datetime NOT NULL,
     `endDateTime` datetime NOT NULL,
     `the_class_id` integer NOT NULL,
-    `testfile` varchar(200) NOT NULL,
     `num_testcases` integer NOT NULL,
     `points_per_testcase` integer NOT NULL,
     `total_points` integer NOT NULL

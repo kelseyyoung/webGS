@@ -35,6 +35,16 @@
         return $ret;
       }
 
+      public function get_classes_by_student($id) {
+	$query = $this->db->get_where('wgsDB_student_classes', array('student_id' => $id))->result();
+	$ret = array();
+	foreach($query as $key => $value) {
+	  $class = $this->db->get_where('wgsDB_class', array('id' => $value->class_id))->row_array();
+	  array_push($ret, $class);
+	}
+	return $ret;
+      }
+
       public function create_class() {
 
         $data = array(

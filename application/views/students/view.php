@@ -23,8 +23,10 @@
         <tbody>
         <?php foreach ($classes as $class) { ?>
         <tr>
-          <td><?php echo $class->name; ?></td>
-          <td></td>
+          <td><?php echo $class['name']; ?></td>
+          <td>
+	    <a type="button" href="<?php echo site_url('classes/student_view/' . $class['id']); ?>" class="btn btn-success">View Class</a>
+	  </td>
         </tr>
         <?php } ?>
         </tbody>

@@ -66,6 +66,7 @@
         <?php } ?>
         </tbody>
       </table> <!--end instructor table-->
+      <button type="button" class="btn btn-success btn-large pull-right" id="save-instructor-changes">Save Changes</button>
     </div>
   </div>
   <hr>
@@ -76,6 +77,7 @@
       <?php if (empty($assignments)) { ?>
         <p>You do not have any assignments for this class. <a href="<?php echo site_url('assignments/create/?class='.urlencode($class['name'])); ?>">Create one now.</a></p>
       <?php } else { ?>
+	<a type="button" class="btn btn-success pull-right" href="<?php echo site_url('assignments/create/?class='.urlencode($class['name'])); ?>">Create Assignment</a> 
         <table class="table table-hover">
           <thead>
             <tr>
@@ -121,27 +123,46 @@
       <a data-toggle="collapse" data-target="#students"><h2>Students</h2></a>
       <div class="hide text-center alert alert-error"><span></span><button class="close">&times;</button></div>
       <div id="students" class="collapse in">
-        <table class="table table-hover">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Username</th>
-              <th>Controls</th>
-            </tr>
-          </thead>
-          <tbody>
-          <?php foreach ($students as $s) { ?>
-          <tr>
-            <td><?php echo $s['name']; ?></td>
-            <td><?php echo $s['username']; ?></td>
-            <td>
-              <a type="button" class="btn" href="#">View Grades</a>
-              <a type="button" class="remove-student btn btn-danger" href="<?php echo site_url('classes/remove_student/'.$class['id'].'/'.$s['id']); ?>">Remove Student</a>
-            </td>
-          </tr>
-          <?php } ?>
-          </tbody>
-        </table>
+	<div class="tabbable">
+	  <ul class="nav nav-tabs">
+	    <li class="active"><a data-toggle="tab" href="#all">All</a></li>
+	    <li><a data-toggle="tab" href="#section1">Section 1</a></li>
+	    <li><a data-toggle="tab" href="#section2">Section 2</a></li>
+	  </ul>
+	  <div class="tab-content">
+	    <div class="tab-pane active" id="all">
+	      <input type="text" class="search-query" placeholder="Search for a student" />
+	      <button type="button" class="btn btn-primary">Search</button>
+	      <table class="table table-hover">
+		<thead>
+		  <tr>
+		    <th>Name</th>
+		    <th>Username</th>
+		    <th>Controls</th>
+		  </tr>
+		</thead>
+		<tbody>
+		<?php foreach ($students as $s) { ?>
+		<tr>
+		  <td><?php echo $s['name']; ?></td>
+		  <td><?php echo $s['username']; ?></td>
+		  <td>
+		    <a type="button" class="btn" href="#">View Grades</a>
+		    <a type="button" class="remove-student btn btn-danger" href="<?php echo site_url('classes/remove_student/'.$class['id'].'/'.$s['id']); ?>">Remove Student</a>
+		  </td>
+		</tr>
+		<?php } ?>
+		</tbody>
+	      </table>
+	    </div>
+	    <div class="tab-pane" id="section1">
+	      <p>Section 1</p>
+	    </div>
+	    <div class="tab-pane" id="section2">
+	      <p>Section 2</p>
+	    </div>
+	  </div>
+	</div>
       </div> <!-- End student table -->
     </div>
   </div>
@@ -174,8 +195,8 @@
     $.post($(this).attr('action'), {"student": $("#student").val()}, function(data) {
       data = $.parseJSON(data);
       if (data) {
-        //add row to students table('classes/remove_student/'.$class['id'].'/'.$s['id']); ?
-        var table = $("#students > table > tbody");
+        //add row to students table
+	var table = $("#students table tbody");
         $(table).append("<tr><td>" + data.name + "</td><td>" + data.username + "</td><td><a type='button' class='btn' href='#'>View Grades</a><a type='button' class='btn btn-danger remove-student' href='<?php echo site_url('classes/remove_student/'. $class['id']); ?>/" + data.id + "'>Remove Student</a></td></tr>");
       } else {
         //show error
@@ -188,11 +209,10 @@
   $("#add-instructor-form").submit(function(e) {
     e.preventDefault();
     $.post($(this).attr('action'), {"instructor": $("#instructor").val()}, function(data) {
-      console.log(data);
       data = $.parseJSON(data);
       if (data) {
         //add row to instructors table
-        var table = $("#instructors > table > tbody");
+        var table = $("#instructors table tbody");
         $(table).append("<tr><td>" + data.name + "</td><td>" + data.username + "</td><td>[Section here]</td><td><a type='button' class='btn btn-danger remove-instructor' href='<?php echo site_url('classes/remove_instructor/'. $class["id"]); ?>/" + data.id + "'>Remove Instructor</a></td></tr>");
       } else {
         //show error
@@ -222,6 +242,11 @@
 	$(button).parent().parent().remove();	
       }
     });
+  });
+
+  $(".nav-tabs > li > a").click(function(e) {
+    e.preventDefault();
+    $(this).tab('show');
   });
 
   $("button.close").click(function() {
