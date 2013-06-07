@@ -66,7 +66,7 @@
         $this->class_model->add_student($id);
         echo json_encode($this->student_model->get_student_by_username($username));
       } else {
-        echo json_encode(array());
+        echo json_encode("");
       }
     }
 
@@ -80,14 +80,18 @@
         $this->class_model->add_instructor($id);
         echo json_encode($this->instructor_model->get_instructor_by_username($username));
       } else {
-        echo json_encode(array());
+        echo json_encode("");
       }
     }
 
-    public function remove_student($id) {
+    public function remove_student($id, $sid) { 
+      $this->class_model->remove_student($id, $sid);
+      echo json_encode("");
     }
 
-    public function remove_instructor($id) {
+    public function remove_instructor($id, $iid) {
+      $this->class_model->remove_instructor($id, $iid);
+      echo json_encode("");
     }
 
     public function create() {

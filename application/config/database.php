@@ -48,11 +48,14 @@
 $active_group = 'default';
 $active_record = TRUE;
 
-$db['default']['hostname'] = 'mysql.cs.arizona.edu';
-$db['default']['username'] = 'wgsAdmin';
-$db['default']['password'] = 'Grading4CSWeb';
+#$db['default']['hostname'] = 'mysql.cs.arizona.edu';
+$db['default']['hostname'] = '127.0.0.1';
+#$db['default']['username'] = 'wgsAdmin';
+$db['default']['username'] = 'root';
+#$db['default']['password'] = 'Grading4CSWeb';
+$db['default']['password'] = 'hockeytime';
 $db['default']['database'] = 'wgsDB';
-$db['default']['dbdriver'] = 'mysqli';
+$db['default']['dbdriver'] = 'mysql';
 $db['default']['port'] = 3306;
 $db['default']['dbprefix'] = '';
 $db['default']['pconnect'] = TRUE;

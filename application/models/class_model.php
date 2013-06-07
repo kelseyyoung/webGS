@@ -60,5 +60,13 @@
         $iquery = $this->db->get_where('wgsDB_instructor', array('username' => $this->input->post('instructor')))->row_array();
         return $this->db->insert('wgsDB_class_instructors', array('class_id' => $id, 'instructor_id' => $iquery['id']));
       }
+
+      public function remove_student($id, $sid) {
+	$this->db->delete('wgsDB_student_classes', array('class_id' => $id, 'student_id' => $sid));
+      }
+
+      public function remove_instructor($id, $iid) {
+	$this->db->delete('wgsDB_class_instructors', array('class_id' => $id, 'instructor_id' => $iid));
+      }
         
   }

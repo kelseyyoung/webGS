@@ -60,7 +60,7 @@
             <td><?php echo $i['username']; ?></td>
             <td>[Section here]</td>
             <td>
-              <a type="button" class="btn btn-danger" href="#">Remove Instructor</a>
+              <a type="button" class="remove-instructor btn btn-danger" href="<?php echo site_url('classes/remove_instructor/'.$class["id"].'/'.$i["id"]); ?>">Remove Instructor</a>
             </td>
           </tr>
         <?php } ?>
@@ -136,7 +136,7 @@
             <td><?php echo $s['username']; ?></td>
             <td>
               <a type="button" class="btn" href="#">View Grades</a>
-              <a type="button" class="btn btn-danger" href="#">Remove Student</a>
+              <a type="button" class="remove-student btn btn-danger" href="<?php echo site_url('classes/remove_student/'.$class['id'].'/'.$s['id']); ?>">Remove Student</a>
             </td>
           </tr>
           <?php } ?>
@@ -167,17 +167,20 @@
     source: instructors
   });
 
+  var class_id="<?php echo $class['id'];?>";
+
   $("#add-student-form").submit(function(e) {
     e.preventDefault();
     $.post($(this).attr('action'), {"student": $("#student").val()}, function(data) {
+      data = $.parseJSON(data);
       if (data) {
+        //add row to students table('classes/remove_student/'.$class['id'].'/'.$s['id']); ?
+        var table = $("#students > table > tbody");
+        $(table).append("<tr><td>" + data.name + "</td><td>" + data.username + "</td><td><a type='button' class='btn' href='#'>View Grades</a><a type='button' class='btn btn-danger remove-student' href='<?php echo site_url('classes/remove_student/'. $class['id']); ?>/" + data.id + "'>Remove Student</a></td></tr>");
+      } else {
+        //show error
         $("#students").prev().find('span').html('That student already belongs to this class');
         $("#students").prev().slideDown();
-        //show error
-      } else {
-        //add row to students table
-        var table = $("#students > table > tbody");
-        $(table).append("<tr><td>" + data.name + "</td><td>" + data.username + "</td><td><a type='button' class='btn' href='#'>View Grades</a><a type='button' class='btn btn-danger' href='#'>Remove Student</a></td></tr>");
       }
     });
   });
@@ -185,14 +188,38 @@
   $("#add-instructor-form").submit(function(e) {
     e.preventDefault();
     $.post($(this).attr('action'), {"instructor": $("#instructor").val()}, function(data) {
+      console.log(data);
+      data = $.parseJSON(data);
       if (data) {
-        $("#instructors").prev().find('span').html('That instructor already belongs to this class');
-        $("#instructors").prev().slideDown();
-        //show error
-      } else {
         //add row to instructors table
         var table = $("#instructors > table > tbody");
-        $(table).append("<tr><td>" + data.name + "</td><td>" + data.username + "</td><td>[Section here]</td><td><a type='button' class='btn btn-danger' href='#'>Remove Instructor</a></td></tr>");
+        $(table).append("<tr><td>" + data.name + "</td><td>" + data.username + "</td><td>[Section here]</td><td><a type='button' class='btn btn-danger remove-instructor' href='<?php echo site_url('classes/remove_instructor/'. $class["id"]); ?>/" + data.id + "'>Remove Instructor</a></td></tr>");
+      } else {
+        //show error
+        $("#instructors").prev().find('span').html('That instructor already belongs to this class');
+        $("#instructors").prev().slideDown();
+      }
+    });
+  });
+
+  $(document).on('click', '.remove-instructor', function(e) {
+    e.preventDefault();
+    var button = $(this);
+    $.post($(this).attr('href'), {}, function(data) {
+      data = $.parseJSON(data);
+      if (!data) {
+	$(button).parent().parent().remove();
+      }
+    });
+  });
+
+  $(document).on('click', '.remove-student', function(e) {
+    e.preventDefault();
+    var button = $(this);
+    $.post($(this).attr('href'), {}, function(data) {
+      data = $.parseJSON(data);
+      if (!data) {
+	$(button).parent().parent().remove();	
       }
     });
   });

@@ -52,7 +52,7 @@
         return $ret;
       }
 
-      public function get_instructor_by_id($username) {
+      public function get_instructor_by_username($username) {
         return $this->db->get_where('wgsDB_instructor', array('username' => $username))->row_array();
       }
   }
