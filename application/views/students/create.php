@@ -31,6 +31,9 @@
           <label class="control-label" for="password">Password: </label>
           <div class="controls">
             <input type="password" id="password" name="password" />
+	    <span class="help-block">
+	      Must be between 6 and 20 characters
+	    </span>
             <?php if (form_error('password')) { ?>
             <span class="help-block"><?php echo form_error('password'); ?></span>
             <?php } ?>

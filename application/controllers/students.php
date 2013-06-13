@@ -44,7 +44,7 @@
 
       $this->form_validation->set_rules('name', 'Name', 'required');
       $this->form_validation->set_rules('username', 'Username', 'required|callback_username_unique');
-      $this->form_validation->set_rules('password', 'Password', 'required|md5');
+      $this->form_validation->set_rules('password', 'Password', 'required|min_length[6]|max_length[20]|md5');
       $this->form_validation->set_rules('password-confirm', 'Confirm Password', 'required|matches[password]');
 
       if ($this->form_validation->run() === FALSE) {

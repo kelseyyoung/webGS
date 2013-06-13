@@ -30,7 +30,10 @@
         <div class="control-group <?php if (form_error('password')) { ?>error<?php } ?>">
           <label class="control-label" for="password">Password: </label>
           <div class="controls">
-            <input type="password" id="password" name="password" value="<?php echo set_value('password'); ?>"/>
+            <input type="password" id="password" name="password" />
+	    <span class="help-block">
+	      Must be between 6 and 20 characters
+	    </span>
             <?php if (form_error('password')) { ?>
             <span class="help-block"><?php echo form_error('password'); ?></span>
             <?php } ?>
@@ -39,7 +42,7 @@
         <div class="control-group <?php if (form_error('password-confirm')) { ?>error<?php } ?>">
           <label class="control-label" for="password-confirm">Confirm Password: </label>
           <div class="controls">
-            <input type="password" name="password-confirm" value="<?php echo set_value('password-confirm'); ?>"/>
+            <input type="password" name="password-confirm" id="password-confirm"/>
             <?php if (form_error('password-confirm')) { ?>
             <span class="help-block"><?php echo form_error('password-confirm'); ?></span>
             <?php } ?>
