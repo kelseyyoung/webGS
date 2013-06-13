@@ -50,7 +50,7 @@ $route['classes/(:any)'] = 'classes/$1';
 $route['classes/add_student/(:num)'] = 'classes/add_student/$1';
 //Assignments
 $route['assignments/create'] = 'assignments/create';
-$route['assignments/edit/(:any)'] = 'assignments/edit';
+$route['assignments/edit/(:num)/(:num)'] = 'assignments/edit/$1/$2';
 $route['assignments/(:any)'] = 'assignments/$1';
 //Unauthorized
 $route['unauthorized'] = 'unauthorized';

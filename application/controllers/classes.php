@@ -5,9 +5,11 @@
     public function __construct() {
       parent::__construct();
       $this->load->model('class_model');
+      $this->load->model('section_model');
       $this->load->model('student_model');
       $this->load->model('assignment_model');
       $this->load->model('instructor_model');
+      $this->load->model('score_model');
       $this->output->set_header("Cache-Control: no-store, no-cache, must-revalidate, no-transform, max-age=0, post-check=0, pre-check=0");
       $this->output->set_header("Pragma: no-cache");
     }
@@ -45,6 +47,8 @@
         $data['all_students'] = $this->student_model->get_students();
         $data['title'] = "Classes";
         $data["instructors"] = $this->instructor_model->get_instructors_by_class($id);
+	$data["all_sections"] = $this->section_model->get_sections_by_class($id);
+	$data["student_sections"] = $this->section_model->get_students_by_class_per_sections($id);
         $data["all_instructors"] = $this->instructor_model->get_instructors();
 
         $this->load->view('templates/header', $data);
@@ -68,9 +72,12 @@
 	}
       }
       if ($auth) {
+	$this->load->helper('form');
+	$this->load->library('form_validation');
 	$data['title'] = "View Class";
 	$data['class'] = $this->class_model->get_classes($id);
 	$data['assignments'] = $this->assignment_model->get_assignments_by_class($id);
+	$data['scores'] = $this->score_model->get_scores_by_student($id, $this->session->userdata('user_id'));
 	$this->load->view('templates/header', $data);
 	$this->load->view('classes/student_view', $data);
 	$this->load->view('templates/footer');
@@ -85,9 +92,10 @@
       $this->load->helper('form');
       $this->load->library('form_validation');
       $this->form_validation->set_rules('student', 'Student', 'required|callback_unique_in_class[' .$id . ']');
-      $username = $this->input->post('student');
+      $this->form_validation->set_rules('student-section', 'Student Section', 'required');
       if ($this->form_validation->run() === TRUE) {
         $this->class_model->add_student($id);
+	$username = $this->input->post('student');
         echo json_encode($this->student_model->get_student_by_username($username));
       } else {
         echo json_encode("");
@@ -114,8 +122,13 @@
     }
 
     public function remove_instructor($id, $iid) {
-      $this->class_model->remove_instructor($id, $iid);
-      echo json_encode("");
+      $instructors = $this->instructor_model->get_instructors_by_class($id);
+      if (count($instructors) == 1) {
+	echo json_encode(array("error" => "A class must have at least one instructor"));
+      } else {
+	$this->class_model->remove_instructor($id, $iid);
+	echo json_encode("");
+      }
     }
 
     public function create() {
@@ -130,6 +143,7 @@
 
         $this->form_validation->set_rules('name', 'Name', 'required|callback_name_unique');
         $this->form_validation->set_rules('num_sections', 'Number of Sections', 'required|numeric');
+	$this->form_validation->set_rules('sections', 'Sections', 'required|callback_matches_num|callback_sections_unique');
 
         if ($this->form_validation->run() === FALSE) {
           //invalid form or get
@@ -146,6 +160,28 @@
         redirect(site_url('unauthorized'));
       }
     
+    }
+
+    public function sections_unique($list) {
+      $sections = explode(",", $list);
+      $is_unique = count($sections) == count(array_unique($sections));
+      if ($is_unique) {
+	return true;
+      } else {
+	$this->form_validation->set_message('sections_unique', "The section names are not unique");
+	return false;
+      }
+    }
+
+    public function matches_num($list) {
+      $num_sections = $this->input->post('num_sections');
+      $sections = explode(",", $list);
+      if (count($sections) != $num_sections) {
+	$this->form_validation->set_message('matches_num', "- The number of sections and the listed sections do not match");
+	return false;
+      } else {
+	return true;
+      }
     }
 
     public function unique_in_class($student, $id) {

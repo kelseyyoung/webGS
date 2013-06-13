@@ -25,8 +25,7 @@
     cursor: pointer;
   }
 
-<?php include_once(view_url().'templates/page_begin.php'); ?>
-  
+<?php include_once(view_url().'templates/page_begin.php'); ?>  
   <div class="row-fluid">
     <div class="span12">
       <h1><?php echo $class['name']; ?></h1>
@@ -49,7 +48,6 @@
           <tr>
             <th>Name</th>
             <th>Username</th>
-            <th>Section</th>
             <th>Controls</th>
           </tr>
         </thead>
@@ -58,7 +56,6 @@
           <tr>
             <td><?php echo $i['name']; ?></td>
             <td><?php echo $i['username']; ?></td>
-            <td>[Section here]</td>
             <td>
               <a type="button" class="remove-instructor btn btn-danger" href="<?php echo site_url('classes/remove_instructor/'.$class["id"].'/'.$i["id"]); ?>">Remove Instructor</a>
             </td>
@@ -66,7 +63,6 @@
         <?php } ?>
         </tbody>
       </table> <!--end instructor table-->
-      <button type="button" class="btn btn-success btn-large pull-right" id="save-instructor-changes">Save Changes</button>
     </div>
   </div>
   <hr>
@@ -100,7 +96,7 @@
               <?php } ?>
             </td>
             <td>
-              <a type="button" class="btn" href="<?php echo site_url('assignments/edit?id='.$a->id.'&class='.$class['name']); ?>">Edit</a>
+              <a type="button" class="btn" href="<?php echo site_url('assignments/edit/'.$a->id.'/'.$class['id']); ?>">Edit</a>
             </td>
           </tr>
           <?php } ?>
@@ -118,6 +114,11 @@
         echo form_open('classes/add_student/'.$class['id'], $attr);
       ?>
         <input type="text" name="student" autocomplete="off" id="student" class="search-query" placeholder="Search by username">
+	<select class="input-medium" id="student-section" name="student-section">
+	  <?php foreach($all_sections as $s) { ?>
+	  <option value="<?php echo $s["name"]; ?>">Section <?php echo $s['name']; ?></option>
+	  <?php } ?>
+	</select>
         <button type="submit" class="btn btn-primary">Add Student</button>
       </form>
       <a data-toggle="collapse" data-target="#students"><h2>Students</h2></a>
@@ -126,14 +127,15 @@
 	<div class="tabbable">
 	  <ul class="nav nav-tabs">
 	    <li class="active"><a data-toggle="tab" href="#all">All</a></li>
-	    <li><a data-toggle="tab" href="#section1">Section 1</a></li>
-	    <li><a data-toggle="tab" href="#section2">Section 2</a></li>
+	    <?php foreach($all_sections as $s) { ?>
+	    <li><a data-toggle="tab" href="#<?php echo $s['name']; ?>">Section <?php echo $s['name']; ?></a></li>
+	    <?php } ?>
 	  </ul>
 	  <div class="tab-content">
 	    <div class="tab-pane active" id="all">
 	      <input type="text" class="search-query" placeholder="Search for a student" />
 	      <button type="button" class="btn btn-primary">Search</button>
-	      <table class="table table-hover">
+	      <table id="table-all" class="table table-hover">
 		<thead>
 		  <tr>
 		    <th>Name</th>
@@ -155,12 +157,32 @@
 		</tbody>
 	      </table>
 	    </div>
-	    <div class="tab-pane" id="section1">
-	      <p>Section 1</p>
+	    <?php foreach ($all_sections as $s) { ?>
+	    <div class="tab-pane" id="<?php echo $s['name']; ?>">
+	      <table id="table-<?php echo $s['name']; ?>" class="table table-hover">
+		<thead>
+		  <tr>
+		    <th>Name</th>
+		    <th>Username</th>
+		    <th>Controls</th>
+		  </tr>
+		</thead>
+		<tbody>
+		  <?php $ss = $student_sections[$s['name']];
+		  foreach($ss as $s) { ?>
+		  <tr>
+		    <td><?php echo $s['name']; ?></td>
+		    <td><?php echo $s['username']; ?></td>
+		    <td>
+		      <a type="button" class="btn" href="#">View Grades</a>
+		      <a type="button" class="remove-student btn btn-danger" href="<?php echo site_url('classes/remove_student/'.$class['id'].'/'.$s['id']); ?>">Remove Student</a>
+		    </td>
+		  </tr>
+		  <?php } ?>
+		</tbody>
+	      </table>
 	    </div>
-	    <div class="tab-pane" id="section2">
-	      <p>Section 2</p>
-	    </div>
+	    <?php } ?>
 	  </div>
 	</div>
       </div> <!-- End student table -->
@@ -192,12 +214,25 @@
 
   $("#add-student-form").submit(function(e) {
     e.preventDefault();
-    $.post($(this).attr('action'), {"student": $("#student").val()}, function(data) {
+    $.post($(this).attr('action'), {"student": $("#student").val(), 'student-section' : $("#student-section").val()}, function(data) {
       data = $.parseJSON(data);
       if (data) {
         //add row to students table
-	var table = $("#students table tbody");
-        $(table).append("<tr><td>" + data.name + "</td><td>" + data.username + "</td><td><a type='button' class='btn' href='#'>View Grades</a><a type='button' class='btn btn-danger remove-student' href='<?php echo site_url('classes/remove_student/'. $class['id']); ?>/" + data.id + "'>Remove Student</a></td></tr>");
+	var table = $("#students table#table-all tbody");
+        $(table).append("<tr><td>" + data.name + 
+	  "</td><td>" + data.username + 
+	  "</td><td>" +
+	  "<a type='button' class='btn' href='#'>View Grades</a>" + 
+	  "<a type='button' class='btn btn-danger remove-student' href='<?php echo site_url('classes/remove_student/'. $class['id']); ?>/" + data.id + "'>Remove Student</a>" +
+	  "</td></tr>");
+	var section = $("#student-section").val();
+	table = $("#students table#table-"  + section + " tbody"); 
+	$(table).append("<tr><td>" + data.name + 
+	  "</td><td>" + data.username + 
+	  "</td><td>" +
+	  "<a type='button' class='btn' href='#'>View Grades</a>" + 
+	  "<a type='button' class='btn btn-danger remove-student' href='<?php echo site_url('classes/remove_student/'. $class['id']); ?>/" + data.id + "'>Remove Student</a>" +
+	  "</td></tr>");
       } else {
         //show error
         $("#students").prev().find('span').html('That student already belongs to this class');
@@ -229,6 +264,9 @@
       data = $.parseJSON(data);
       if (!data) {
 	$(button).parent().parent().remove();
+      } else {
+	$("#instructors").prev().find('span').html(data.error);
+	$("#instructors").prev().slideDown();
       }
     });
   });
@@ -236,10 +274,14 @@
   $(document).on('click', '.remove-student', function(e) {
     e.preventDefault();
     var button = $(this);
+    var name = $(button).parent().prev().text();
     $.post($(this).attr('href'), {}, function(data) {
       data = $.parseJSON(data);
       if (!data) {
 	$(button).parent().parent().remove();	
+	//Find other row that they're in
+	var otherRow = $("#students table tbody tr td:contains('" + name + "')");
+	$(otherRow).parent().remove();
       }
     });
   });

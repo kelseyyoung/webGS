@@ -7,7 +7,7 @@
       <h2 class="text-center">Edit Assignment</h2>
       <?php
         $attr = array('class' => 'form-horizontal');
-        echo form_open_multipart('assignments/edit?id='.$_GET['id'].'&class='.$_GET['class'], $attr); ?>
+        echo form_open_multipart('assignments/edit/'. $assignment['id'] . '/'. $class['id'], $attr); ?>
 
         <div class="control-group <?php if (form_error('name')) { ?>error<?php } ?>">
           <label class="control-label" for="name">Name: </label>
@@ -147,8 +147,8 @@
     }
   });
 
-  <?php if (isset($_GET['class'])) { ?>
-  $("input#class").val("<?php echo urldecode($_GET['class']); ?>");
+  <?php if ($class) { ?>
+  $("input#class").val("<?php echo $class['name']; ?>");
   <?php } ?>
 
   //Set values

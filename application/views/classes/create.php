@@ -26,6 +26,16 @@
             <?php } ?>
           </div>
         </div>
+	<div class="control-group <?php if(form_error('sections')) { ?>error<?php } ?>">
+	  <label class="control-label" for="sections">List Sections: </label>
+	  <div class="controls">
+	    <textarea type="text" id="sections" name="sections"><?php echo set_value('sections'); ?></textarea>
+	    <span class="help-block">- List the sections separated by commas</span>
+	    <?php if (form_error('sections')) { ?>
+	    <span class="help-block"><?php echo form_error('sections'); ?></span>
+	    <?php } ?>
+	  </div>
+	</div>
         <div class="form-actions">
           <button class="btn btn-primary" type="submit" name="submit">Create Class</button>
         </div>

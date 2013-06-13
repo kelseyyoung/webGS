@@ -35,6 +35,10 @@
         return $ret;
       }
 
+      public function get_class_by_instructor($id, $cid) {
+	return $this->db->get_where('wgsDB_class_instructors', array('instructor_id' => $id, 'class_id' => $cid))->row_array();
+      }
+
       public function get_classes_by_student($id) {
 	$query = $this->db->get_where('wgsDB_student_classes', array('student_id' => $id))->result();
 	$ret = array();
@@ -56,13 +60,17 @@
         $this->db->insert('wgsDB_class_instructors', array('class_id' => $id['id'], 'instructor_id' => $this->session->userdata('user_id')));
         //Create sections
         $num_sections = $this->input->post('num_sections');
-        for($i = 1; $i <= $num_sections; $i++) {
-          $this->db->insert('wgsDB_section', array('name' => $i, 'the_class_id' => $id['id']));
+	$sections = explode(",", $this->input->post('sections'));
+        for($i = 0; $i < $num_sections; $i++) {
+          $this->db->insert('wgsDB_section', array('name' => trim($sections[$i]), 'the_class_id' => $id['id']));
         }
       }
 
       public function add_student($id) {
+	$section = $this->input->post('student-section');
         $squery = $this->db->get_where('wgsDB_student', array('username' => $this->input->post('student')))->row_array();
+	$section_query = $this->db->get_where('wgsDB_section', array('name' => $section, 'the_class_id' => $id))->row_array();
+	$this->db->insert('wgsDB_section_students', array('section_id' => $section_query['id'], 'student_id' => $squery['id']));
         return $this->db->insert('wgsDB_student_classes', array('student_id' => $squery['id'], 'class_id' => $id));
       }
 
@@ -73,6 +81,14 @@
 
       public function remove_student($id, $sid) {
 	$this->db->delete('wgsDB_student_classes', array('class_id' => $id, 'student_id' => $sid));
+	//Also delete from section
+	$sections = $this->db->get_where('wgsDB_section', array('the_class_id' => $id))->result_array();
+	foreach($sections as $s) {
+	  $query = $this->db->get_where('wgsDB_section_students', array('section_id' => $s['id'], 'student_id' => $sid))->row_array();
+	  if (!empty($query)) {
+	    $this->db->delete('wgsDB_section_students', array('section_id' => $s['id'], 'student_id' => $sid));
+	  }
+	}
       }
 
       public function remove_instructor($id, $iid) {

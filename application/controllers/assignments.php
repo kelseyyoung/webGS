@@ -80,20 +80,15 @@
     
     }
 
-    public function edit() {
+    public function edit($assignment = FALSE, $class = FALSE) {
       $user = $this->session->userdata('type');
-      if (!$user || $user != "instructor") {
+      if (!$user || $user != "instructor" || !$assignment || !$class) {
         redirect(site_url('unauthorized'));
       }
-      //Get class id from assignment
-      parse_str($this->input->server('QUERY_STRING'), $get_data);
-      $assignment = $this->assignment_model->get_assignments($get_data["id"]);
-      $class = $this->class_model->get_classes_by_name(urldecode($get_data["class"]));
-      $auth = FALSE;
-      if ($class && $assignment & $assignment["the_class_id"] == $class["id"] && $class["instructor_id"] == $this->session->userdata('user_id')) {
-        $auth = TRUE;
-      }
-      if ($auth) {
+      $assignment = $this->assignment_model->get_assignments($assignment);
+      $class = $this->class_model->get_classes($class);
+      $query = $this->class_model->get_class_by_instructor($class['id'], $this->session->userdata('user_id'));
+      if ($assignment && $class && $assignment["the_class_id"] == $class["id"] && !empty($query)) {
         $this->load->helper('form');
         $this->load->library('form_validation');
 
@@ -106,8 +101,8 @@
         $this->form_validation->set_rules('total_points', 'Total Points', 'required|numeric');
 
         $data['title'] = "Edit Assignment";
-        //$data['classes'] = $this->class_model->get_classes_by_instructor($this->session->userdata("user_id"));
-        $data['assignment'] = $this->assignment_model->get_assignments($get_data["id"]);
+	$data['assignment'] = $assignment;
+	$data['class'] = $class;
         $data['testcase'] = $this->testcase_model->get_testcases_by_assignment($data["assignment"]["id"]);
 
         if ($this->form_validation->run() === FALSE) {
