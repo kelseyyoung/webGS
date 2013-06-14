@@ -4,6 +4,10 @@
     return base_url().'assets/';
   }
 
+  function asset_path() {
+    return dirname(dirname(dirname(__FILE__))). '/assets/';
+  }
+
   function upload_path() {
     return dirname(dirname(dirname(__FILE__))). '/uploads/';
     //return $_SERVER['DOCUMENT_ROOT'].'/uploads/';
