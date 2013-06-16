@@ -153,6 +153,13 @@
         } else {
           //form valid
           $this->class_model->create_class();
+	  //Create directory for class
+	  $classDir = str_replace(" ", "_", $this->input->post('name'));
+	  mkdir(upload_path().'/'.$classDir);
+	  $sections = explode(",", $this->input->post('sections'));
+	  foreach ($sections as $s) {
+	    mkdir(upload_path().'/'.$classDir.'/'.$s);
+	  }
           redirect(site_url('instructors/view/'.$this->session->userdata('user_id')));
         }  
       } else {

@@ -7,6 +7,7 @@
       $this->load->model('assignment_model');
       $this->load->model('class_model');
       $this->load->model('testcase_model');
+      $this->load->model('section_model');
       $this->output->set_header("Cache-Control: no-store, no-cache, must-revalidate, no-transform, max-age=0, post-check=0, pre-check=0");
       $this->output->set_header("Pragma: no-cache");
     }
@@ -63,7 +64,7 @@
           //Upload java file
           if (! $this->upload->do_upload('testcase_file')) {
             //Error uploading file
-	    echo upload_path();
+	    //echo upload_path();
             $data['upload_errors'] = $this->upload->display_errors();
             $this->load->view('templates/header', $data);
             $this->load->view('assignments/create', $data);
@@ -71,7 +72,21 @@
           } else {
             $this->assignment_model->create_assignment();
             $this->testcase_model->create_testcase();
+	    //Create directory for all sections
+	    $sections = $this->section_model->get_sections_by_class_name($this->input->post('class'));
+	    $classDir = str_replace(" ", "_", $this->input->post('class'));
+	    $aDir = str_replace(" ", "_", $this->input->post('name'));
+	    foreach($sections as $s) {
+	      mkdir(upload_path().'/'.$classDir.'/'.$s['name'].'/'.$aDir);
+	      //Make directory for testfile
+	      mkdir(upload_path().'/'.$classDir.'/'.$s['name'].'/'.$aDir.'/testcase');
+	      //Copy file to testcase directory
+	      copy(upload_path().'/'.$this->input->post('testcase_name'), upload_path().'/'.$classDir.'/'.$s['name'].'/'.$aDir.'/testcase/'.$this->input->post('testcase_name'));
+	    }
+	    //Remove test file from uploads directory
+	    unlink(upload_path().'/'.$this->input->post('testcase_name'));
             redirect(site_url('instructors/view/'.$this->session->userdata("user_id")));
+	    echo $this->input->post('testcase_file');
           }
         }  
       } else {

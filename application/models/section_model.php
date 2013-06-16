@@ -10,6 +10,12 @@
       return $query->result_array();
     }
 
+    public function get_sections_by_class_name($name) {
+      $class = $this->db->get_where('wgsDB_class', array('name' => $name))->row_array();
+      $query = $this->db->get_where('wgsDB_section', array('the_class_id' => $class['id']));
+      return $query->result_array();
+    }
+
     public function get_students_by_class_per_sections($id) {
       $sections = $this->db->get_where("wgsDB_section", array("the_class_id" => $id))->result_array();
       $ret = array();
