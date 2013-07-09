@@ -60,7 +60,7 @@
 	  <?php if (empty($scores[$i])) { ?>
 	  --
 	  <?php } else { 
-	    echo $scores[$i]['score'];
+	    echo $scores[$i]['score'] . '/' . $assignments[$i]->total_points;
 	  } ?>
 	  </td>
 	  <td>
@@ -94,6 +94,11 @@
       var a = $(this).parent().prev().prev().prev().prev().text().trim();
       console.log(a);
       $("#assignment_name").val(a);
+    });
+
+    $("#assignment_submission").on('change', function(e) {
+      var filename = $(this).val().split('\\').pop();
+      $("#submission_name").val(filename);
     });
 
   });

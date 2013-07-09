@@ -22,6 +22,26 @@
       return $ret;
 
     }
+
+    public function update_score($student_id, $assignment_id, $new_score) { 
+      $data = array(
+	'score' => $new_score,
+	'student_id' => $student_id,
+	'assignment_id' => $assignment_id
+      );
+      $this->db->where('student_id', $student_id);
+      $this->db->where('assignment_id', $assignment_id);
+      $this->db->update('wgsDB_score', $data);
+    }
+
+    public function submit_score($student_id, $assignment_id, $score) {
+      $data = array(
+	'score' => $score,
+	'student_id' => $student_id,
+	'assignment_id' => $assignment_id
+      );
+      return $this->db->insert('wgsDB_score', $data);
+    }
   }
 
 ?>

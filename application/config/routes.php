@@ -53,7 +53,8 @@ $route['classes/submit_assignment/(:num)'] = 'classes/submit_assignment/$1';
 $route['assignments/create'] = 'assignments/create';
 $route['assignments/edit/(:num)/(:num)'] = 'assignments/edit/$1/$2';
 $route['assignments/(:any)'] = 'assignments/$1';
-$route['assignments/submit'] = 'assignments/submit';
+$route['assignments/submit/(:num)'] = 'assignments/submit/$1';
+$route['assignments/results/(:num)'] = 'assignments/results/$1';
 //Unauthorized
 $route['unauthorized'] = 'unauthorized';
 //Logout

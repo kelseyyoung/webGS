@@ -8,6 +8,7 @@
       $this->load->model('class_model');
       $this->load->model('testcase_model');
       $this->load->model('section_model');
+      $this->load->model('score_model');
       $this->output->set_header("Cache-Control: no-store, no-cache, must-revalidate, no-transform, max-age=0, post-check=0, pre-check=0");
       $this->output->set_header("Pragma: no-cache");
     }
@@ -95,7 +96,7 @@
     
     }
 
-    public function submit() {
+    public function submit($sid) {
       //Show loading page and run java testcase
       $data['title'] = "Submit Assignment";
       $this->load->view('templates/header', $data);
@@ -114,13 +115,16 @@
       $string = "javac -cp .:" . asset_path() . "java/junit-4.10.jar:" . asset_path() . "java/ant.jar -d . *.java 2>&1";
       shell_exec($string);
       //Run testcase
-      //TODO: not hardcode testcase name
+      $id = $this->session->flashdata('assignment_id');
+      $testcase = $this->testcase_model->get_testcases_by_assignment($id);
+      $i = strpos($testcase['name'], ".java");
+      $testcaseName = substr($testcase['name'], 0, $i);
       $string = "java -cp .:" . asset_path() . "java/junit-4.10.jar:" . 
 	asset_path() . "java/ant.jar:" . 
 	asset_path() . "java/ant-junit.jar:" .
 	$path . "/new" .
 	" org.apache.tools.ant.taskdefs.optional.junit.JUnitTestRunner " .
-	"CalcTest" .
+	$testcaseName .
 	" formatter=org.apache.tools.ant.taskdefs.optional.junit.XMLJUnitResultFormatter," .
 	$path . "/new/results.xml 2>&1";
 
@@ -129,29 +133,73 @@
       //Redirect, set flash data first
       $this->session->set_flashdata('filename', $file);
       $this->session->set_flashdata('path', $path);
-      redirect(site_url('assignments/results'));
+      $this->session->set_flashdata('assignment_id', $id);
+      redirect(site_url('assignments/results/' . $sid));
 
     }
 
-    public function results() {
+    public function results($sid) {
       //Show results from running testcases
       $path = $this->session->flashdata('path');
       $file = $this->session->flashdata('filename');
+      $id = $this->session->flashdata('assignment_id');
       //Get results from xml file
       $xml = new DOMDocument();
       $xml->load($path."/new/results.xml");
       $header = $xml->getElementsByTagName('testsuite');
-      //Only runs once?
-      foreach($header as $h) {
-	$data['errors'] = $h->getAttribute('errors');
-	$data['failures'] = $h->getAttribute('failures');
-	$data['tests'] = $h->getAttribute('tests');
+      $h = $header->item(0);
+      $errors = $h->getAttribute('errors');
+      $num_failures = $h->getAttribute('failures');
+      $tests = $h->getAttribute('tests');
+      $data['errors'] = $errors;
+      $data['failures'] = $num_failures;
+      $data['tests'] = $tests;
+      //Get potential failures
+      $failureArray = array();
+      $failures = $xml->getElementsByTagName('failure');
+      foreach($failures as $f) {
+	$message = $f->getAttribute('message');
+	$i = strpos($message, "expected");
+	if ($i !== false) {
+	  $message = substr($message, 0, $i - 1); 
+	}
+	array_push($failureArray, $message);
       }
-      //Get total output and errors
-      $data['output-total'] = $xml->getElementsByTagName('system-out');
-      $data['errors-total'] = $xml->getElementsByTagName('system-err');
-      
+
+      //Scoring
+      $assignment = $this->assignment_model->get_assignments($id);
+      $data['total_points'] = $assignment['total_points'];
+      $newScore = $assignment["points_per_testcase"] * ($tests - $num_failures);
+      $data['score'] = $newScore;
+      $score = $this->score_model->get_score($sid, $id);
+      if (!empty($score)) {
+	//Score exists, see if we got a higher one
+	if ($score['score'] < $newScore) {
+	  //Update
+	  $this->score_model->update_score($sid, $id, $newScore);
+	  //Move current file to old
+	  rename($path.'/current/'.$file, $path.'/old/'.$file.'.'.date("Y-m-d-H:i:s"));
+	  //Move new file to current
+	  rename($path .'/new/'.$file, $path.'/current/'.$file);
+	} else {
+	  //Move file to old
+	  rename($path.'/new/'.$file, $path.'/old/'.$file.'.'.date("Y-m-d-H:i:s"));
+	}
+      } else {
+	//Score doesn't exist, create new one
+	$this->score_model->submit_score($sid, $id, $newScore);
+	//Move file to 'current'
+	rename($path .'/new/'.$file, $path.'/current/'.$file);
+      }
+      //Delete all other files in new directory
+      foreach(glob($path.'/new/*') as $fname) {
+	if (is_file($fname)) {
+	  unlink($fname);
+	}
+      }
+
       $data['title'] = "Submission Results";
+      $data['messages'] = $failureArray;
 
       $this->load->view('templates/header', $data);
       $this->load->view('assignments/results', $data);

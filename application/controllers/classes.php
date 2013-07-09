@@ -113,12 +113,15 @@
 
       if (! $this->upload->do_upload('assignment_submission')) {
 	//Error uploading file
+	echo "error";
       } else {
 	//Valid upload, redirect to running test page
+	$aObj = $this->assignment_model->get_assignment_by_name($this->input->post('assignment_name'));
+	$this->session->set_flashdata('assignment_id', $aObj['id']);
 	$this->session->set_flashdata('path', $path);
 	$this->session->set_flashdata('filename', $this->input->post('submission_name'));
 	//Redirect to submit page
-	redirect(site_url('assignments/submit'));
+	redirect(site_url('assignments/submit/' . $id));
       }
     }
 

@@ -57,6 +57,10 @@
         $query = $this->db->get_where('wgsDB_assignment', array('the_class_id' => $id));
         return $query->result();
       }
+
+      public function get_assignment_by_name($name) {
+	return $this->db->get_where('wgsDB_assignment', array('name' => $name))->row_array();
+      }
   }
 
   ?>
