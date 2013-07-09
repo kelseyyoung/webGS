@@ -31,5 +31,10 @@
       return $ret;
     }
 
+    public function match_section_to_student($sid, $sectionid) {
+      $ret = $this->db->get_where("wgsDB_section_students", array("section_id" => $sectionid, "student_id" => $sid));
+      return $ret->row_array();
+    }
+
   }
 ?>

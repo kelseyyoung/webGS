@@ -77,9 +77,9 @@
 	    $classDir = str_replace(" ", "_", $this->input->post('class'));
 	    $aDir = str_replace(" ", "_", $this->input->post('name'));
 	    foreach($sections as $s) {
-	      mkdir(upload_path().'/'.$classDir.'/'.$s['name'].'/'.$aDir);
+	      mkdir(upload_path().'/'.$classDir.'/'.str_replace(" ", "_", $s['name']).'/'.$aDir);
 	      //Make directory for testfile
-	      mkdir(upload_path().'/'.$classDir.'/'.$s['name'].'/'.$aDir.'/testcase');
+	      mkdir(upload_path().'/'.$classDir.'/'.str_replace(" ", "_", $s['name']).'/'.$aDir.'/testcase');
 	      //Copy file to testcase directory
 	      copy(upload_path().'/'.$this->input->post('testcase_name'), upload_path().'/'.$classDir.'/'.$s['name'].'/'.$aDir.'/testcase/'.$this->input->post('testcase_name'));
 	    }
@@ -93,6 +93,69 @@
         redirect(site_url('unauthorized'));
       }
     
+    }
+
+    public function submit() {
+      //Show loading page and run java testcase
+      $data['title'] = "Submit Assignment";
+      $this->load->view('templates/header', $data);
+      $this->load->view('assignments/submit', $data);
+      $this->load->view('templates/footer');
+      //Get variables
+      $path = $this->session->flashdata('path');
+      $file = $this->session->flashdata('filename');
+      //Change dir to student's new directory
+      chdir($path . '/new');
+      //Copy testcase to here 
+      $string = "cp ../../testcase/* . 2>&1";
+      shell_exec($string);
+      //Compile all files
+      //TODO: error check for compile errors
+      $string = "javac -cp .:" . asset_path() . "java/junit-4.10.jar:" . asset_path() . "java/ant.jar -d . *.java 2>&1";
+      shell_exec($string);
+      //Run testcase
+      //TODO: not hardcode testcase name
+      $string = "java -cp .:" . asset_path() . "java/junit-4.10.jar:" . 
+	asset_path() . "java/ant.jar:" . 
+	asset_path() . "java/ant-junit.jar:" .
+	$path . "/new" .
+	" org.apache.tools.ant.taskdefs.optional.junit.JUnitTestRunner " .
+	"CalcTest" .
+	" formatter=org.apache.tools.ant.taskdefs.optional.junit.XMLJUnitResultFormatter," .
+	$path . "/new/results.xml 2>&1";
+
+      shell_exec($string);
+
+      //Redirect, set flash data first
+      $this->session->set_flashdata('filename', $file);
+      $this->session->set_flashdata('path', $path);
+      redirect(site_url('assignments/results'));
+
+    }
+
+    public function results() {
+      //Show results from running testcases
+      $path = $this->session->flashdata('path');
+      $file = $this->session->flashdata('filename');
+      //Get results from xml file
+      $xml = new DOMDocument();
+      $xml->load($path."/new/results.xml");
+      $header = $xml->getElementsByTagName('testsuite');
+      //Only runs once?
+      foreach($header as $h) {
+	$data['errors'] = $h->getAttribute('errors');
+	$data['failures'] = $h->getAttribute('failures');
+	$data['tests'] = $h->getAttribute('tests');
+      }
+      //Get total output and errors
+      $data['output-total'] = $xml->getElementsByTagName('system-out');
+      $data['errors-total'] = $xml->getElementsByTagName('system-err');
+      
+      $data['title'] = "Submission Results";
+
+      $this->load->view('templates/header', $data);
+      $this->load->view('assignments/results', $data);
+      $this->load->view('templates/footer');
     }
 
     public function edit($assignment = FALSE, $class = FALSE) {

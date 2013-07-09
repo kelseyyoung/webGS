@@ -48,10 +48,12 @@ $route['students/(:any)'] = 'students/$1';
 $route['classes/create'] = 'classes/create';
 $route['classes/(:any)'] = 'classes/$1';
 $route['classes/add_student/(:num)'] = 'classes/add_student/$1';
+$route['classes/submit_assignment/(:num)'] = 'classes/submit_assignment/$1';
 //Assignments
 $route['assignments/create'] = 'assignments/create';
 $route['assignments/edit/(:num)/(:num)'] = 'assignments/edit/$1/$2';
 $route['assignments/(:any)'] = 'assignments/$1';
+$route['assignments/submit'] = 'assignments/submit';
 //Unauthorized
 $route['unauthorized'] = 'unauthorized';
 //Logout

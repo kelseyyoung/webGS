@@ -86,6 +86,42 @@
       }
     }
 
+    public function submit_assignment($id) {
+      //Figure out upload path
+      $class = str_replace(" ", "_", $this->input->post('class_name'));
+      $assignment = str_replace(" ", "_", $this->input->post('assignment_name'));
+      $sections = $this->section_model->get_sections_by_class_name($this->input->post('class_name'));
+      $student = $this->student_model->get_students($id);
+      foreach($sections as $s) {
+	$ret = $this->section_model->match_section_to_student($this->session->userdata('user_id'), $s['id']);
+	if (!empty($ret)) {
+	  $path = upload_path().$class.'/'.str_replace(" ", "_", $s['name']).'/'.$assignment.'/'.$student["username"];
+	  if (!file_exists($path)) {
+	    //Create if it doesn't already exist
+	    mkdir($path);
+	    mkdir($path . '/new');
+	    mkdir($path . '/current');
+	    mkdir($path . '/old');
+	  }
+	  $config["upload_path"] = $path . '/new'; 
+	}
+      }
+      $config["allowed_types"] = "*";
+      $this->load->library('upload', $config);
+
+      $this->load->helper('form');
+
+      if (! $this->upload->do_upload('assignment_submission')) {
+	//Error uploading file
+      } else {
+	//Valid upload, redirect to running test page
+	$this->session->set_flashdata('path', $path);
+	$this->session->set_flashdata('filename', $this->input->post('submission_name'));
+	//Redirect to submit page
+	redirect(site_url('assignments/submit'));
+      }
+    }
+
     public function add_student($id) {
       //TODO: csrf 
       
