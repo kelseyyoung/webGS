@@ -97,6 +97,7 @@
             </td>
             <td>
               <a type="button" class="btn" href="<?php echo site_url('assignments/edit/'.$a->id.'/'.$class['id']); ?>">Edit</a>
+	      <a type="button" class="btn" href="<?php echo site_url('assignments/view_grades/'.$a->id .'/'.$class['id']); ?>">View Grades</a>
             </td>
           </tr>
           <?php } ?>
@@ -149,7 +150,7 @@
 		  <td><?php echo $s['name']; ?></td>
 		  <td><?php echo $s['username']; ?></td>
 		  <td>
-		    <a type="button" class="btn" href="#">View Grades</a>
+		    <a type="button" class="btn" href="<?php echo site_url('instructors/view_grades/' . $class['id'] .'/' . $s['id']); ?>">View Grades</a>
 		    <a type="button" class="remove-student btn btn-danger" href="<?php echo site_url('classes/remove_student/'.$class['id'].'/'.$s['id']); ?>">Remove Student</a>
 		  </td>
 		</tr>

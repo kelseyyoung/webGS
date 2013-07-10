@@ -46,7 +46,7 @@
 	    <th>Assignment Name</th>
 	    <th>Open Date</th>
 	    <th>Due Date</th>
-	    <th>Current Score</th>
+	    <th>Score</th>
 	    <th>Controls</th>
 	  </tr>
 	</thead>
@@ -92,7 +92,6 @@
     $(".open-modal").click(function() {
       //Populate assignment field on click
       var a = $(this).parent().prev().prev().prev().prev().text().trim();
-      console.log(a);
       $("#assignment_name").val(a);
     });
 

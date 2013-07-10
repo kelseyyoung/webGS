@@ -41,6 +41,7 @@
 //Instructors
 $route['instructors/create'] = 'instructors/create';
 $route['instructors/(:num)'] = 'instructors/$1';
+$route['instructors/view_grades/(:num)/(:num)'] = 'instructors/view_grades/$1/$2';
 //Students
 $route['students/create'] = 'students/create';
 $route['students/(:any)'] = 'students/$1';
@@ -55,6 +56,7 @@ $route['assignments/edit/(:num)/(:num)'] = 'assignments/edit/$1/$2';
 $route['assignments/(:any)'] = 'assignments/$1';
 $route['assignments/submit/(:num)'] = 'assignments/submit/$1';
 $route['assignments/results/(:num)'] = 'assignments/results/$1';
+$route['assignments/view_grades/(:num)/(:num)'] = 'assignments/view_grades/$1/$2';
 //Unauthorized
 $route['unauthorized'] = 'unauthorized';
 //Logout

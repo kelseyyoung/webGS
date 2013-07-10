@@ -6,6 +6,9 @@
       parent::__construct();
       $this->load->model('instructor_model');
       $this->load->model('class_model');
+      $this->load->model('assignment_model');
+      $this->load->model('score_model');
+      $this->load->model('student_model');
       $this->output->set_header("Cache-Control: no-store, no-cache, must-revalidate, no-transform, max-age=0, post-check=0, pre-check=0");
       $this->output->set_header("Pragma: no-cache");
     }
@@ -67,6 +70,26 @@
         redirect(site_url(''));
       }  
     
+    }
+
+    public function view_grades($class_id, $id) {
+      //View grades of a student per class
+      $user = $this->session->userdata('type');
+      if (!$user || $user != "instructor") {
+	redirect(site_url('unauthorized'));
+      }
+      $class = $this->class_model->get_classes($class_id);
+      $assignments = $this->assignment_model->get_assignments_by_class($class_id);
+      $scores = $this->score_model->get_scores_by_student($class_id, $id);
+      $student = $this->student_model->get_students($id);
+      $data['title'] = "View Grades";
+      $data['class'] = $class;
+      $data['assignments'] = $assignments;
+      $data['scores'] = $scores;
+      $data['student'] = $student;
+      $this->load->view('templates/header', $data);
+      $this->load->view('instructors/view_grades', $data);
+      $this->load->view('templates/footer');
     }
 
     //Make sure the username is unique

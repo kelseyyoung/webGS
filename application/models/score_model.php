@@ -23,6 +23,10 @@
 
     }
 
+    public function get_scores_by_assignment($id) {
+      return $this->db->get_where('wgsDB_score', array('assignment_id' => $id))->result_array();
+    }
+
     public function update_score($student_id, $assignment_id, $new_score) { 
       $data = array(
 	'score' => $new_score,

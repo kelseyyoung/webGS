@@ -9,6 +9,7 @@
       $this->load->model('testcase_model');
       $this->load->model('section_model');
       $this->load->model('score_model');
+      $this->load->model('student_model');
       $this->output->set_header("Cache-Control: no-store, no-cache, must-revalidate, no-transform, max-age=0, post-check=0, pre-check=0");
       $this->output->set_header("Pragma: no-cache");
     }
@@ -261,6 +262,23 @@
       }
     }
 
+    public function view_grades($id, $class_id) {
+      //View all grades per assignment
+      $type = $this->session->userdata('type');
+      if (!$type || $type != "instructor") {
+	redirect(site_url('unauthorized'));
+      }
+      $scores = $this->score_model->get_scores_by_assignment($id);
+      $assignment = $this->assignment_model->get_assignments($id);
+      $students = $this->student_model->get_students_by_class($class_id);
+      $data['assignment'] = $assignment;
+      $data['scores'] = $scores;
+      $data['students'] = $students;
+      $data['title'] = "View Grades";
+      $this->load->view('templates/header', $data);
+      $this->load->view('assignments/view_grades', $data);
+      $this->load->view('templates/footer');
+    }
 
     //Make sure start date is less than end date
     public function compare_date() {
