@@ -27,7 +27,7 @@
 	      $echo = "--";
 	      foreach($scores as $sc) {
 		if ($sc['student_id'] == $s['id']) {
-		  $echo = $sc['score'];
+		  $echo = $sc['score'] .'/' . $assignment['total_points'];
 		}
 	      }
 	      echo $echo;
