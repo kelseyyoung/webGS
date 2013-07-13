@@ -16,7 +16,8 @@
 	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 	<h3>Submit Assignment</h3>
       </div>
-      <?php echo form_open_multipart('classes/submit_assignment/'. $this->session->userdata('user_id')); ?>
+      <?php $attr = array('id' => 'submit-assignment-form');
+	echo form_open_multipart('classes/submit_assignment/'. $this->session->userdata('user_id'), $attr); ?>
 	<div class="modal-body">
 	  <div class="fileupload fileupload-new text-center" data-provides="fileupload">
 	    <span class="btn btn-file">
@@ -28,13 +29,19 @@
 	    <span class="fileupload-preview"></span>
 	    <a href="#" class="close fileupload-exists" data-dismiss="fileupload" style="float: none">&times;</a>
 	  </div>
+	  <div id="submit-progress" class="hide text-center">
+	    <h3>Submitting...</h3>
+	    <div class="progress progress-striped active">
+	      <div class="bar" style="width: 100%;"></div>
+	    </div>
+	  </div>
 	</div>
 	<div class="modal-footer">
 	  <input type="submit" name="submit" class="btn btn-primary" />
 	  <input type="hidden" name="class_name" id="class_name" value="<?php echo $class['name']; ?>"/>
 	  <input type="hidden" name="assignment_name" id="assignment_name" />
 	</div>
-      </form>
+      </form>	
     </div> <!-- End of modal -->
     <div id="assignments">
     <?php if (empty($assignments)) { ?>
@@ -72,6 +79,7 @@
 	    <?php } else { ?>
 	    Submission Closed
 	    <?php } ?>
+	    <a type="button" class="btn" href="<?php echo site_url('assignments/view_submissions/'.$assignments[$i]->id); ?>">View Submissions</a>
 	  </td>
 	</tr>
 	<?php } ?>
@@ -98,6 +106,12 @@
     $("#assignment_submission").on('change', function(e) {
       var filename = $(this).val().split('\\').pop();
       $("#submission_name").val(filename);
+    });
+
+    $("#submit-assignment-form").on("submit", function() {
+      //Show loading bar
+      $("#submit-progress").removeClass('hide');
+      return true;
     });
 
   });

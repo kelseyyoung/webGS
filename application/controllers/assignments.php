@@ -10,6 +10,7 @@
       $this->load->model('section_model');
       $this->load->model('score_model');
       $this->load->model('student_model');
+      $this->load->model('submission_model');
       $this->output->set_header("Cache-Control: no-store, no-cache, must-revalidate, no-transform, max-age=0, post-check=0, pre-check=0");
       $this->output->set_header("Pragma: no-cache");
     }
@@ -97,48 +98,6 @@
     
     }
 
-    public function submit($sid) {
-      //Show loading page and run java testcase
-      $data['title'] = "Submit Assignment";
-      $this->load->view('templates/header', $data);
-      $this->load->view('assignments/submit', $data);
-      $this->load->view('templates/footer');
-      //Get variables
-      $path = $this->session->flashdata('path');
-      $file = $this->session->flashdata('filename');
-      //Change dir to student's new directory
-      chdir($path . '/new');
-      //Copy testcase to here 
-      $string = "cp ../../testcase/* . 2>&1";
-      shell_exec($string);
-      //Compile all files
-      //TODO: error check for compile errors
-      $string = "javac -cp .:" . asset_path() . "java/junit-4.10.jar:" . asset_path() . "java/ant.jar -d . *.java 2>&1";
-      shell_exec($string);
-      //Run testcase
-      $id = $this->session->flashdata('assignment_id');
-      $testcase = $this->testcase_model->get_testcases_by_assignment($id);
-      $i = strpos($testcase['name'], ".java");
-      $testcaseName = substr($testcase['name'], 0, $i);
-      $string = "java -cp .:" . asset_path() . "java/junit-4.10.jar:" . 
-	asset_path() . "java/ant.jar:" . 
-	asset_path() . "java/ant-junit.jar:" .
-	$path . "/new" .
-	" org.apache.tools.ant.taskdefs.optional.junit.JUnitTestRunner " .
-	$testcaseName .
-	" formatter=org.apache.tools.ant.taskdefs.optional.junit.XMLJUnitResultFormatter," .
-	$path . "/new/results.xml 2>&1";
-
-      shell_exec($string);
-
-      //Redirect, set flash data first
-      $this->session->set_flashdata('filename', $file);
-      $this->session->set_flashdata('path', $path);
-      $this->session->set_flashdata('assignment_id', $id);
-      redirect(site_url('assignments/results/' . $sid));
-
-    }
-
     public function results($sid) {
       //Show results from running testcases
       $path = $this->session->flashdata('path');
@@ -198,12 +157,30 @@
 	  unlink($fname);
 	}
       }
+      //Create submission record
+      $this->submission_model->create_submission($newScore, $failureArray, $sid, $assignment['id']);
 
       $data['title'] = "Submission Results";
       $data['messages'] = $failureArray;
 
       $this->load->view('templates/header', $data);
       $this->load->view('assignments/results', $data);
+      $this->load->view('templates/footer');
+    }
+
+    public function view_submissions($aid) {
+      $user = $this->session->userdata('user_id');
+      if (!$user) {
+	redirect(site_url('unauthorized'));
+      }
+      $assignment = $this->assignment_model->get_assignments($aid);
+      $submissions = $this->submission_model->get_submissions_by_student_and_assignment($user, $aid);
+
+      $data['title'] = "View Submissions";
+      $data['assignment'] = $assignment;
+      $data['submissions'] = $submissions;
+      $this->load->view('templates/header', $data);
+      $this->load->view('assignments/view_submissions', $data);
       $this->load->view('templates/footer');
     }
 

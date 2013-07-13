@@ -92,11 +92,25 @@ CREATE TABLE `wgsDB_section` (
 ALTER TABLE `wgsDB_section` ADD CONSTRAINT `the_class_id_refs_id_4fafa546` FOREIGN KEY (`the_class_id`) REFERENCES `wgsDB_class` (`id`);
 ALTER TABLE `wgsDB_section` ADD CONSTRAINT `instructor_id_refs_id_2609e053` FOREIGN KEY (`instructor_id`) REFERENCES `wgsDB_instructor` (`id`);
 ALTER TABLE `wgsDB_section_students` ADD CONSTRAINT `section_id_refs_id_08bd7f29` FOREIGN KEY (`section_id`) REFERENCES `wgsDB_section` (`id`);
+CREATE TABLE `wgsDB_submission` (
+	`id` integer AUTO_INCREMENT NOT NULL PRIMARY KEY,
+	`score` integer NOT NULL,
+	`hints` longtext NOT NULL,
+	`student_id` integer NOT NULL,
+	`assignment_id` integer NOT NULL,
+	`time_submitted` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)
+;
+ALTER TABLE `wgsDB_submission` ADD CONSTRAINT `assignment_id_refs_id_d6d82e44` FOREIGN KEY (`assignment_id`) REFERENCES `wgsDB_assignment` (`id`);
+ALTER TABLE `wgsDB_submission` ADD CONSTRAINT `student_id_refs_id_ec4e4262` FOREIGN KEY (`student_id`) REFERENCES `wgsDB_student` (`id`);
+
 CREATE INDEX `wgsDB_assignment_e231a574` ON `wgsDB_assignment` (`the_class_id`);
 CREATE INDEX `wgsDB_score_94741166` ON `wgsDB_score` (`student_id`);
 CREATE INDEX `wgsDB_score_52f7e0e7` ON `wgsDB_score` (`assignment_id`);
 CREATE INDEX `wgsDB_testcase_52f7e0e7` ON `wgsDB_testcase` (`assignment_id`);
 CREATE INDEX `wgsDB_section_e231a574` ON `wgsDB_section` (`the_class_id`);
 CREATE INDEX `wgsDB_section_fdb8591a` ON `wgsDB_section` (`instructor_id`);
+CREATE INDEX `wgsDB_submission_94741166` ON `wgsDB_submission` (`student_id`);
+CREATE INDEX `wgsDB_submission_52f7e0e7` ON `wgsDB_submission` (`assignment_id`);
 
 COMMIT;
