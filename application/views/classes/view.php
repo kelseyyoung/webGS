@@ -134,8 +134,8 @@
 	  </ul>
 	  <div class="tab-content">
 	    <div class="tab-pane active" id="all">
-	      <input type="text" class="search-query" placeholder="Search for a student" />
-	      <button type="button" class="btn btn-primary">Search</button>
+	      <input type="text" id="student-search-query" class="search-query" placeholder="Search for a student" />
+	      <button type="button" class="btn btn-primary" id="student-search">Search</button>
 	      <table id="table-all" class="table table-hover">
 		<thead>
 		  <tr>
@@ -294,5 +294,25 @@
 
   $("button.close").click(function() {
     $(this).parent().slideUp();
+  });
+
+  //Searching for students
+  $("#student-search-query").keyup(function(e) {
+    if (e.which == 13) {
+      $("#student-search").click();
+    }
+  });
+
+  $("#student-search").click(function() {
+    var query = new RegExp($("#student-search-query").val(), 'gi');
+    var rows = $("#table-all > tbody > tr");
+    for (var i = 0; i < $(rows).length; i++) {
+      var row = $(rows)[i];
+      if ($(row).children().eq(0).text().match(query) || $(row).children().eq(1).text().match(query)) {
+	$(row).show();
+      } else {
+	$(row).hide();
+      }
+    }
   });
 </script>
