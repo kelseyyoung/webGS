@@ -1,4 +1,5 @@
 BEGIN;
+DROP TABLE `wgsDB_submission`;
 ALTER TABLE `wgsDB_section_students` DROP FOREIGN KEY `section_id_refs_id_08bd7f29`;
 DROP TABLE `wgsDB_section`;
 DROP TABLE `wgsDB_section_students`;

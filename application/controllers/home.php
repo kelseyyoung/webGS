@@ -19,10 +19,10 @@
         //Go to that page
         if( $this->session->userdata["type"] == "instructor" ) {
           //Redirect to instructor/view
-          redirect(site_url('instructors/view/'.$this->session->userdata("user_id")));
+          redirect(site_url('instructors/view'));
         } else {
           //Redirect to student/view
-          redirect(site_url('students/view/'.$this->session->userdata("user_id")));
+          redirect(site_url('students/view'));
         }
       } else {
         //Not logged in, take them to home page
@@ -55,12 +55,12 @@
             } else {
               //Is student, set session and redirect
               $this->session->set_userdata(array('user_id' => $squery["id"], 'type' => "student"));
-              redirect(site_url('students/view/'.$this->session->userdata("user_id")));
+              redirect(site_url('students/view'));
             }
           } else {
             //Is instructor, set session and redirect
             $this->session->set_userdata(array('user_id' => $iquery["id"], 'type' => 'instructor'));
-            redirect(site_url('instructors/view/'.$this->session->userdata("user_id")));
+            redirect(site_url('instructors/view'));
           }
         }
       }

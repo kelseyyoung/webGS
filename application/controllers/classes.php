@@ -10,6 +10,7 @@
       $this->load->model('assignment_model');
       $this->load->model('instructor_model');
       $this->load->model('score_model');
+      $this->load->model('testcase_model');
       $this->output->set_header("Cache-Control: no-store, no-cache, must-revalidate, no-transform, max-age=0, post-check=0, pre-check=0");
       $this->output->set_header("Pragma: no-cache");
     }
@@ -115,13 +116,36 @@
 	//Error uploading file
 	echo "error";
       } else {
-	//Valid upload, redirect to running test page
+	//Valid upload
 	$aObj = $this->assignment_model->get_assignment_by_name($this->input->post('assignment_name'));
-	$this->session->set_flashdata('assignment_id', $aObj['id']);
+	$file = $this->input->post('submission_name');
+	chdir($path . '/new');
+	//Copy testcase to here 
+	$string = "cp ../../testcase/* . 2>&1";
+	shell_exec($string);
+	//Compile all files
+	//TODO: error check for compile errors
+	$string = "javac -cp .:" . asset_path() . "java/junit-4.10.jar:" . asset_path() . "java/ant.jar -d . *.java 2>&1";
+	shell_exec($string);
+	//Run testcase
+	$testcase = $this->testcase_model->get_testcases_by_assignment($aObj['id']);
+	$i = strpos($testcase['name'], ".java");
+	$testcaseName = substr($testcase['name'], 0, $i);
+	$string = "java -cp .:" . asset_path() . "java/junit-4.10.jar:" . 
+	  asset_path() . "java/ant.jar:" . 
+	  asset_path() . "java/ant-junit.jar:" .
+	  $path . "/new" .
+	  " org.apache.tools.ant.taskdefs.optional.junit.JUnitTestRunner " .
+	  $testcaseName .
+	  " formatter=org.apache.tools.ant.taskdefs.optional.junit.XMLJUnitResultFormatter," .
+	  $path . "/new/results.xml 2>&1";
+
+	shell_exec($string);
+	//Redirect, set flash data first
+	$this->session->set_flashdata('filename', $file);
 	$this->session->set_flashdata('path', $path);
-	$this->session->set_flashdata('filename', $this->input->post('submission_name'));
-	//Redirect to submit page
-	redirect(site_url('assignments/submit/' . $id));
+	$this->session->set_flashdata('assignment_id', $aObj['id']);
+	redirect(site_url('assignments/results/' . $id));
       }
     }
 

@@ -23,10 +23,10 @@
       $this->load->view('templates/footer');
     }
 
-    public function view($id) {
+    public function view() {
       $user = $this->session->userdata("user_id");
-      if ($user && $this->session->userdata("type") == "instructor" && $id == $this->session->userdata("user_id")) {
-        $data['instructor'] = $this->instructor_model->get_instructors($id);
+      if ($user && $this->session->userdata("type") == "instructor") {
+        $data['instructor'] = $this->instructor_model->get_instructors($user);
         $data['title'] = "Instructors";
         $data['classes'] = $this->class_model->get_classes_by_instructor($user);
 

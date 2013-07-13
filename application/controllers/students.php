@@ -20,11 +20,11 @@
       $this->load->view('templates/footer');
     }
 
-    public function view($id) {
+    public function view() {
       $user = $this->session->userdata("user_id");
-      if ($user && $this->session->userdata("type") == "student" && $id == $this->session->userdata("user_id")) {
-        $data['student'] = $this->student_model->get_students($id);
-	$data['classes']  = $this->class_model->get_classes_by_student($id);
+      if ($user && $this->session->userdata("type") == "student") {
+        $data['student'] = $this->student_model->get_students($user);
+	$data['classes']  = $this->class_model->get_classes_by_student($user);
         $data['title'] = "Students";
 
         $this->load->view('templates/header', $data);

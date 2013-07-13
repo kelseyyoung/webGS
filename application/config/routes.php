@@ -40,14 +40,15 @@
 
 //Instructors
 $route['instructors/create'] = 'instructors/create';
-$route['instructors/(:num)'] = 'instructors/$1';
+$route['instructors/view'] = 'instructors/view';
 $route['instructors/view_grades/(:num)/(:num)'] = 'instructors/view_grades/$1/$2';
 //Students
 $route['students/create'] = 'students/create';
-$route['students/(:any)'] = 'students/$1';
+$route['students/view'] = 'students/view';
 //Classes
 $route['classes/create'] = 'classes/create';
-$route['classes/(:any)'] = 'classes/$1';
+$route['classes/view/(:num)'] = 'classes/view/$1';
+$route['classes/student_view/(:num)'] = 'classes/student_view/$1';
 $route['classes/add_student/(:num)'] = 'classes/add_student/$1';
 $route['classes/submit_assignment/(:num)'] = 'classes/submit_assignment/$1';
 //Assignments
