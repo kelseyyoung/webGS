@@ -107,24 +107,31 @@
 	  $config["upload_path"] = $path . '/new'; 
 	}
       }
-      $config["allowed_types"] = "*";
+      $config["allowed_types"] = "java";
       $this->load->library('upload', $config);
 
       $this->load->helper('form');
 
-      if (! $this->upload->do_upload('assignment_submission')) {
-	//Error uploading file
-	echo "error";
+      $canPass = true;
+      foreach ($_FILES as $key => $value) {
+	if (! $this->upload->do_upload($key)) {
+	  $canPass = false;
+	}
+      }
+      if (!$canPass) {
+	$data['upload_errors'] = $this->upload->display_errors();
+	$this->load->view('templates/header', $data);
+	$this->load->view('classes/student_view', $data);
+	$this->load->view('templates/footer');
       } else {
 	//Valid upload
 	$aObj = $this->assignment_model->get_assignment_by_name($this->input->post('assignment_name'));
 	$file = $this->input->post('submission_name');
 	chdir($path . '/new');
-	//Copy testcase to here 
+	//Copy all files from testcase to here 
 	$string = "cp ../../testcase/* . 2>&1";
 	shell_exec($string);
-	//Compile all files
-	//TODO: error check for compile errors
+	//Compile all java files
 	$string = "javac -cp .:" . asset_path() . "java/junit-4.10.jar:" . asset_path() . "java/ant.jar -d . *.java 2>&1";
 	shell_exec($string);
 	//Run testcase

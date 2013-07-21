@@ -40,7 +40,7 @@
       if ($user && $user == "instructor") {
 
         $config["upload_path"] = upload_path();
-        $config["allowed_types"] = '*';
+        $config["allowed_types"] = 'java';
         $this->load->library('upload', $config);
         
         $this->load->helper('form');
@@ -55,6 +55,7 @@
         $this->form_validation->set_rules('num_testcases', 'Number of Testcases', 'required|numeric');
         $this->form_validation->set_rules('points_per_testcase', 'Points per Testcase', 'required|numeric');
         $this->form_validation->set_rules('total_points', 'Total Points', 'required|numeric');
+	$this->form_validation->set_rules('main_testcase_name', 'Main Testcase', 'required|callback_testcase_matches');
 
         if ($this->form_validation->run() === FALSE) {
           //invalid form or get
@@ -64,17 +65,22 @@
           $this->load->view('templates/footer');
         } else {
           //form valid
-          //Upload java file
-          if (! $this->upload->do_upload('testcase_file')) {
-            //Error uploading file
-	    //echo upload_path();
-            $data['upload_errors'] = $this->upload->display_errors();
-            $this->load->view('templates/header', $data);
-            $this->load->view('assignments/create', $data);
-            $this->load->view('templates/footer');
-          } else {
-            $this->assignment_model->create_assignment();
-            $this->testcase_model->create_testcase();
+          //Upload java files
+	  $canPass = true;
+	  foreach ($_FILES as $key => $value) {
+	    if (! $this->upload->do_upload($key)) {
+	      $canPass = false;
+	    }
+	  }
+	  if (!$canPass) {
+	    $data['upload_errors'] = $this->upload->display_errors();
+	    $this->load->view('templates/header', $data);
+	    $this->load->view('assignments/create', $data);
+	    $this->load->view('templates/footer');
+	  } else {
+	    //No errors happened uploading
+	    $this->assignment_model->create_assignment();
+	    $this->testcase_model->create_testcase();
 	    //Create directory for all sections
 	    $sections = $this->section_model->get_sections_by_class_name($this->input->post('class'));
 	    $classDir = str_replace(" ", "_", $this->input->post('class'));
@@ -83,14 +89,17 @@
 	      mkdir(upload_path().'/'.$classDir.'/'.str_replace(" ", "_", $s['name']).'/'.$aDir);
 	      //Make directory for testfile
 	      mkdir(upload_path().'/'.$classDir.'/'.str_replace(" ", "_", $s['name']).'/'.$aDir.'/testcase');
-	      //Copy file to testcase directory
-	      copy(upload_path().'/'.$this->input->post('testcase_name'), upload_path().'/'.$classDir.'/'.$s['name'].'/'.$aDir.'/testcase/'.$this->input->post('testcase_name'));
+	      foreach($_FILES as $key => $value) {
+		//Copy file to testcase directory
+		copy(upload_path().'/'.$value['name'], upload_path().'/'.$classDir.'/'.$s['name'].'/'.$aDir.'/testcase/'.$value['name']);
+	      }
 	    }
-	    //Remove test file from uploads directory
-	    unlink(upload_path().'/'.$this->input->post('testcase_name'));
-            redirect(site_url('instructors/view/'.$this->session->userdata("user_id")));
-	    echo $this->input->post('testcase_file');
-          }
+	    foreach($_FILES as $key => $value) {
+	      //Remove test file from uploads directory
+	      unlink(upload_path().'/'.$value['name']);
+	    }
+	    redirect(site_url('instructors/view/'.$this->session->userdata("user_id")));
+	  }
         }  
       } else {
         redirect(site_url('unauthorized'));
@@ -203,6 +212,7 @@
         $this->form_validation->set_rules('num_testcases', 'Number of Testcases', 'required|numeric');
         $this->form_validation->set_rules('points_per_testcase', 'Points per Testcase', 'required|numeric');
         $this->form_validation->set_rules('total_points', 'Total Points', 'required|numeric');
+	$this->form_validation->set_rules('main_testcase_name', 'Main Testcase', 'required|callback_testcase_matches');
 
         $data['title'] = "Edit Assignment";
 	$data['assignment'] = $assignment;
@@ -277,8 +287,20 @@
       if (empty($query)) {
         return true;
       } else {
-        $this->form_validation->set_message("name_unique", "That assignment name is already taken");
+        $this->form_validation->set_message("name_unique", "That assignment name is already taken.");
         return false;
       }
+    }
+
+    //Make sure testcase name is one of the files uploaded
+    public function testcase_matches($name) {
+      foreach ($_FILES as $key => $value) {
+	$fName = $value['name'];
+	if ($name == $fName) {
+	  return true;
+	}
+      }
+      $this->form_validation->set_message('testcase_matches', "No file was uploaded with that name.");
+      return false;
     }
   }

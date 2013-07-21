@@ -8,7 +8,7 @@
     public function create_testcase() {
       $aquery = $this->db->get_where('wgsDB_assignment', array('name' => $this->input->post('name')))->row_array();
       $data = array(
-        'name' => $this->input->post('testcase_name'),
+        'name' => $this->input->post('main_testcase_name'),
         'assignment_id' => $aquery['id']
       );
 
