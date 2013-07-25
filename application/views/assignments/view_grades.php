@@ -1,9 +1,33 @@
-<!--Inline CSS here-->
+
+#new-grade {
+  margin-bottom: 0px !important;
+}
 
 <?php include_once(view_url() . 'templates/page_begin.php'); ?>
 
   <div class="row-fluid">
     <div class="span12">
+      <!--Change grade modal-->
+      <div class="modal hide fade" id="change-grade-modal">
+	<div class="modal-header">
+	  <button type="button" class="close" data-dismiss="modal" aria-hidden="ture">&times;</button>
+	  <h3>Change Grade</h3>
+	</div>
+	<?php echo form_open('assignments/change_grade'); ?>
+	<div class="modal-body">
+	  <input type="hidden" name="student" id="student"/>
+	  <input type="hidden" name="assignment" id="assignment" value="<?php echo $assignment['id']; ?>"/>
+	  <input type="hidden" name="class" id="class" value="<?php echo $class['id']; ?>"/>
+	  <div class="text-center">
+	    <input type="text" class="input-mini" name="new-grade" id="new-grade"/>
+	    <span id="total" class="help-inline"></span>
+	  </div>
+	</div>
+	<div class="modal-footer">
+	  <button type="submit" name="submit" class="btn btn-primary">Change Grade</button>
+	</div>
+	</form>
+      </div> <!--End change grade modal-->
       <h1>Grades for <?php echo $assignment['name']; ?></h1>
     </div>
   </div>
@@ -26,6 +50,7 @@
 		<th>Name</th>
 		<th>Username</th>
 		<th>Score</th>
+		<th>Actions</th>
 	      </tr>
 	    </thead>
 	    <tbody>
@@ -43,6 +68,9 @@
 		  }
 		  echo $echo;
 		?>
+		</td>
+		<td>
+		  <button class="change-grade btn" type="button">Change Grade</button>
 		</td>
 	      </tr>
 	    <?php } ?>
@@ -94,6 +122,16 @@
 	  $(row).hide();
 	}
       }
+    });
+
+    $(".change-grade").click(function() {
+      var currGrade = $(this).parent().prev().text().split('/')[0].trim(); 
+      var total = $(this).parent().prev().text().split('/')[1].trim(); 
+      var username = $(this).parent().prev().prev().text();
+      $("#new-grade").val(currGrade);
+      $("#total").text("/ " + total);
+      $("#student").val(username);
+      $("#change-grade-modal").modal('show');
     });
 
   });

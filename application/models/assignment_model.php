@@ -55,7 +55,7 @@
       public function get_assignments_by_class($id) {
         $this->db->order_by("startDateTime", "asc");
         $query = $this->db->get_where('wgsDB_assignment', array('the_class_id' => $id));
-        return $query->result();
+        return $query->result_array();
       }
 
       public function get_assignment_by_name($name) {

@@ -9,6 +9,7 @@
       $this->load->model('assignment_model');
       $this->load->model('score_model');
       $this->load->model('student_model');
+      $this->load->model('section_model');
       $this->output->set_header("Cache-Control: no-store, no-cache, must-revalidate, no-transform, max-age=0, post-check=0, pre-check=0");
       $this->output->set_header("Pragma: no-cache");
     }
@@ -82,6 +83,25 @@
       $assignments = $this->assignment_model->get_assignments_by_class($class_id);
       $scores = $this->score_model->get_scores_by_student($class_id, $id);
       $student = $this->student_model->get_students($id);
+      $section = $this->section_model->get_section_for_student($id, $class_id); 
+      $submissions = array();
+      foreach ($assignments as $a) {
+	$submissions[$a['id']] = array();
+	$path = upload_path().str_replace(" ", "_", $class['name']).'/'.str_replace(" ", "_", $section['name']).'/'.str_replace(" ", "_", $a['name']).'/'.$student['username'];
+	foreach (glob($path.'/current/*') as $file) {
+	  if (is_file($file)) {
+	    $filename = substr($file, strrpos($file, "/") + 1);
+	    array_push($submissions[$a['id']], array("file" => $filename, "path" => $path.'/current/'));
+	  }
+	}
+	foreach (glob($path.'/old/*') as $file) {
+	  if (is_file($file)) {
+	    $filename = substr($file, strrpos($file, "/") + 1);
+	    array_push($submissions[$a['id']], array("file" => $filename, "path" => $path .'/old/'));
+	  }
+	}
+      }
+      $data['submissions'] = $submissions;
       $data['title'] = "View Grades";
       $data['class'] = $class;
       $data['assignments'] = $assignments;
@@ -90,6 +110,13 @@
       $this->load->view('templates/header', $data);
       $this->load->view('instructors/view_grades', $data);
       $this->load->view('templates/footer');
+    }
+
+    public function get_file_contents() {
+      $path = $_GET['path'];
+      $file = $_GET['file'];
+      $filestr = file_get_contents($path.$file);
+      echo $filestr;
     }
 
     //Make sure the username is unique

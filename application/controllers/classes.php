@@ -126,7 +126,10 @@
       } else {
 	//Valid upload
 	$aObj = $this->assignment_model->get_assignment_by_name($this->input->post('assignment_name'));
-	$file = $this->input->post('submission_name');
+	$files = array();
+	foreach ($_FILES as $key => $value) {
+	  array_push($files, $value['name']);
+	}
 	chdir($path . '/new');
 	//Copy all files from testcase to here 
 	$string = "cp ../../testcase/* . 2>&1";
@@ -146,10 +149,9 @@
 	  $testcaseName .
 	  " formatter=org.apache.tools.ant.taskdefs.optional.junit.XMLJUnitResultFormatter," .
 	  $path . "/new/results.xml 2>&1";
-
 	shell_exec($string);
 	//Redirect, set flash data first
-	$this->session->set_flashdata('filename', $file);
+	$this->session->set_flashdata('files', $files);
 	$this->session->set_flashdata('path', $path);
 	$this->session->set_flashdata('assignment_id', $aObj['id']);
 	redirect(site_url('assignments/results/' . $id));

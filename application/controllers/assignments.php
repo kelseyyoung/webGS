@@ -110,7 +110,7 @@
     public function results($sid) {
       //Show results from running testcases
       $path = $this->session->flashdata('path');
-      $file = $this->session->flashdata('filename');
+      $files = $this->session->flashdata('files');
       $id = $this->session->flashdata('assignment_id');
       //Get results from xml file
       $xml = new DOMDocument();
@@ -146,19 +146,29 @@
 	if ($score['score'] < $newScore) {
 	  //Update
 	  $this->score_model->update_score($sid, $id, $newScore);
-	  //Move current file to old
-	  rename($path.'/current/'.$file, $path.'/old/'.$file.'.'.date("Y-m-d-H:i:s"));
-	  //Move new file to current
-	  rename($path .'/new/'.$file, $path.'/current/'.$file);
+	  //Move current files to old
+	  foreach(glob($path.'/current/*') as $file) {
+	    if (is_file($file)) {
+	      rename($file, str_replace("/current/", "/old/", $file));
+	    }
+	  }
+	  foreach($files as $file) {
+	    //Move new files to current
+	    rename($path .'/new/'.$file, $path.'/current/'.$file.'.'.date("Y-m-d_H:i:s"));
+	  }
 	} else {
-	  //Move file to old
-	  rename($path.'/new/'.$file, $path.'/old/'.$file.'.'.date("Y-m-d-H:i:s"));
+	  foreach($files as $file) {
+	    //Move files to old
+	    rename($path.'/new/'.$file, $path.'/old/'.$file.'.'.date("Y-m-d_H:i:s"));
+	  }
 	}
       } else {
 	//Score doesn't exist, create new one
 	$this->score_model->submit_score($sid, $id, $newScore);
-	//Move file to 'current'
-	rename($path .'/new/'.$file, $path.'/current/'.$file);
+	foreach ($files as $file) {
+	  //Move files to 'current'
+	  rename($path .'/new/'.$file, $path.'/current/'.$file.'.'.date("Y-m-d_H:i:s"));
+	}
       }
       //Delete all other files in new directory
       foreach(glob($path.'/new/*') as $fname) {
@@ -255,6 +265,8 @@
       if (!$type || $type != "instructor") {
 	redirect(site_url('unauthorized'));
       }
+      $this->load->helper('form');
+      $this->load->library('form_validation');
       $scores = $this->score_model->get_scores_by_assignment($id);
       $assignment = $this->assignment_model->get_assignments($id);
       $students = $this->student_model->get_students_by_class($class_id);
@@ -263,10 +275,18 @@
       $data['students'] = $students;
       $data['all_sections'] = $this->section_model->get_sections_by_class($id);
       $data['student_sections'] = $this->section_model->get_students_by_class_per_sections($id);
+      $data['class'] = $this->class_model->get_classes($class_id);
       $data['title'] = "View Grades";
       $this->load->view('templates/header', $data);
       $this->load->view('assignments/view_grades', $data);
       $this->load->view('templates/footer');
+    }
+
+    public function change_grade() {
+      $this->load->helper('form');
+      $student = $this->student_model->get_student_by_username($this->input->post('student'));
+      $this->score_model->update_score($student['id'], $this->input->post('assignment'), $this->input->post('new-grade'));
+      redirect(site_url('assignments/view_grades/'.$this->input->post('assignment').'/'.$this->input->post('class')));
     }
 
     //Make sure start date is less than end date

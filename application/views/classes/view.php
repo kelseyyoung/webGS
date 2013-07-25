@@ -85,10 +85,10 @@
           <tbody>
           <?php foreach ($assignments as $a) { ?>
           <tr>
-            <td><?php echo $a->name; ?></td>
+            <td><?php echo $a['name']; ?></td>
             <td><?php
-              $startDate = new DateTime($a->startDateTime);
-              $endDate = new DateTime($a->endDateTime);
+              $startDate = new DateTime($a['startDateTime']);
+              $endDate = new DateTime($a['endDateTime']);
               if ($startDate <= new DateTime("now") && $endDate >= new DateTime("now")) {
                 ?><span class="active">Active</span>
               <?php } else { ?>
@@ -96,8 +96,8 @@
               <?php } ?>
             </td>
             <td>
-              <a type="button" class="btn" href="<?php echo site_url('assignments/edit/'.$a->id.'/'.$class['id']); ?>">Edit</a>
-	      <a type="button" class="btn" href="<?php echo site_url('assignments/view_grades/'.$a->id .'/'.$class['id']); ?>">View Grades</a>
+              <a type="button" class="btn" href="<?php echo site_url('assignments/edit/'.$a['id'].'/'.$class['id']); ?>">Edit</a>
+	      <a type="button" class="btn" href="<?php echo site_url('assignments/view_grades/'.$a['id'] .'/'.$class['id']); ?>">View Grades</a>
             </td>
           </tr>
           <?php } ?>

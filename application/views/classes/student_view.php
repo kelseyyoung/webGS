@@ -28,13 +28,13 @@
 	    <span class="fileupload-preview"></span>
 	    <a href="#" class="close fileupload-exists" data-dismiss="fileupload" style="float: none">&times;</a>
 	  </div>
+	  <button id="add-file" type="button" class="btn btn-success"><i class="icon-plus"></i> Add File</button>
 	  <div id="submit-progress" class="hide text-center">
 	    <h3>Submitting...</h3>
 	    <div class="progress progress-striped active">
 	      <div class="bar" style="width: 100%;"></div>
 	    </div>
 	  </div>
-	  <button id="add-file" type="button" class="btn btn-success"><i class="icon-plus"></i> Add File</button>
 	</div>
 	<div class="modal-footer">
 	  <input type="submit" name="submit" class="btn btn-primary" />
