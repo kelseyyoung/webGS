@@ -1,4 +1,5 @@
-<!--Inline CSS here-->
+<style>
+</style>
 
 <?php include_once(view_url().'templates/page_begin.php'); ?>
 
@@ -60,26 +61,26 @@
 	<tbody>
 	<?php for ($i = 0; $i < count($assignments); $i++) { ?>
 	<tr>
-	  <td><?php echo $assignments[$i]->name; ?></td>
-	  <td><?php echo $assignments[$i]->startDateTime; ?></td>
-	  <td><?php echo $assignments[$i]->endDateTime; ?></td>
+	  <td><?php echo $assignments[$i]['name']; ?></td>
+	  <td><?php echo $assignments[$i]['startDateTime']; ?></td>
+	  <td><?php echo $assignments[$i]['endDateTime']; ?></td>
 	  <td>
 	  <?php if (empty($scores[$i])) { ?>
 	  --
 	  <?php } else { 
-	    echo $scores[$i]['score'] . '/' . $assignments[$i]->total_points;
+	    echo $scores[$i]['score'] . '/' . $assignments[$i]['total_points'];
 	  } ?>
 	  </td>
 	  <td>
 	    <?php 
-	    $startDate = new DateTime($assignments[$i]->startDateTime);
-	    $endDate = new DateTime($assignments[$i]->endDateTime);
+	    $startDate = new DateTime($assignments[$i]['startDateTime']);
+	    $endDate = new DateTime($assignments[$i]['endDateTime']);
 	    if ($startDate <= new DateTime('now') && $endDate >= new DateTime('now')) { ?>
 	    <a type="button" class="btn btn-success open-modal" href="#submit-modal" data-toggle="modal">Submit</a>
 	    <?php } else { ?>
 	    <a type="button" class="btn btn-danger" disabled="disabled">Submit</a>
 	    <?php } ?>
-	    <a type="button" class="btn" href="<?php echo site_url('assignments/view_submissions/'.$assignments[$i]->id); ?>">View Submissions</a>
+	    <a type="button" class="btn" href="<?php echo site_url('assignments/view_submissions/'.$assignments[$i]['id']); ?>">View Submissions</a>
 	  </td>
 	</tr>
 	<?php } ?>
@@ -110,13 +111,6 @@
       var a = $(this).parent().prev().prev().prev().prev().text().trim();
       $("#assignment_name").val(a);
     });
-
-    /*
-    $("#assignment_submission").on('change', function(e) {
-      var filename = $(this).val().split('\\').pop();
-      $("#submission_name").val(filename);
-    });
-    */
 
     $("#submit-assignment-form").on("submit", function() {
       //Show loading bar

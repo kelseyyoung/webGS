@@ -1,4 +1,4 @@
-<!-- Inline CSS here -->
+<style type="text/css">
   #assignments #students {
     overflow: auto;
   }
@@ -24,6 +24,7 @@
   h2:hover {
     cursor: pointer;
   }
+</style>
 
 <?php include_once(view_url().'templates/page_begin.php'); ?>  
   <div class="row-fluid">

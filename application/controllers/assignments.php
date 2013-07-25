@@ -15,99 +15,91 @@
       $this->output->set_header("Pragma: no-cache");
     }
 
-    public function index() {
-      $data['assignments'] = $this->assignment_model->get_assignments();
-      $data['title'] = "Assignments";
-    
-      $this->load->view('templates/header', $data);
-      $this->load->view('assignments/index', $data);
-      $this->load->view('templates/footer');
-
-    }
-
-    public function view($id) {
-       $data['assignment'] = $this->assignment_model->get_assignments($id);
-       $data['title'] = "Assignments";
-
-       $this->load->view('templates/header', $data);
-       $this->load->view('assignments/view', $data);
-       $this->load->view('templates/footer');
-    }
-
+    /**
+      * url: assignments/create
+      * INSTRUCTORS ONLY
+      * Creates an assignment
+      */
     public function create() {
 
       $user = $this->session->userdata('type');
-      if ($user && $user == "instructor") {
-
-        $config["upload_path"] = upload_path();
-        $config["allowed_types"] = 'java';
-        $this->load->library('upload', $config);
-        
-        $this->load->helper('form');
-        $this->load->library('form_validation');
-
-        $data['title'] = 'Create an assignment';
-
-        $this->form_validation->set_rules('name', 'Name', 'required|callback_name_unique');
-        $this->form_validation->set_rules('class', 'Class', 'required');
-        $this->form_validation->set_rules('due_date_start', 'Start Date', 'required|callback_compare_date');
-        $this->form_validation->set_rules('due_date_end', 'End Date', 'required|callback_compare_date');
-        $this->form_validation->set_rules('num_testcases', 'Number of Testcases', 'required|numeric');
-        $this->form_validation->set_rules('points_per_testcase', 'Points per Testcase', 'required|numeric');
-        $this->form_validation->set_rules('total_points', 'Total Points', 'required|numeric');
-	$this->form_validation->set_rules('main_testcase_name', 'Main Testcase', 'required|callback_testcase_matches');
-
-        if ($this->form_validation->run() === FALSE) {
-          //invalid form or get
-          $data['classes'] = $this->class_model->get_classes_by_instructor($this->session->userdata("user_id"));
-          $this->load->view('templates/header', $data);
-          $this->load->view('assignments/create', $data);
-          $this->load->view('templates/footer');
-        } else {
-          //form valid
-          //Upload java files
-	  $canPass = true;
-	  foreach ($_FILES as $key => $value) {
-	    if (! $this->upload->do_upload($key)) {
-	      $canPass = false;
-	    }
-	  }
-	  if (!$canPass) {
-	    $data['upload_errors'] = $this->upload->display_errors();
-	    $this->load->view('templates/header', $data);
-	    $this->load->view('assignments/create', $data);
-	    $this->load->view('templates/footer');
-	  } else {
-	    //No errors happened uploading
-	    $this->assignment_model->create_assignment();
-	    $this->testcase_model->create_testcase();
-	    //Create directory for all sections
-	    $sections = $this->section_model->get_sections_by_class_name($this->input->post('class'));
-	    $classDir = str_replace(" ", "_", $this->input->post('class'));
-	    $aDir = str_replace(" ", "_", $this->input->post('name'));
-	    foreach($sections as $s) {
-	      mkdir(upload_path().'/'.$classDir.'/'.str_replace(" ", "_", $s['name']).'/'.$aDir);
-	      //Make directory for testfile
-	      mkdir(upload_path().'/'.$classDir.'/'.str_replace(" ", "_", $s['name']).'/'.$aDir.'/testcase');
-	      foreach($_FILES as $key => $value) {
-		//Copy file to testcase directory
-		copy(upload_path().'/'.$value['name'], upload_path().'/'.$classDir.'/'.$s['name'].'/'.$aDir.'/testcase/'.$value['name']);
-	      }
-	    }
-	    foreach($_FILES as $key => $value) {
-	      //Remove test file from uploads directory
-	      unlink(upload_path().'/'.$value['name']);
-	    }
-	    redirect(site_url('instructors/view/'.$this->session->userdata("user_id")));
-	  }
-        }  
-      } else {
-        redirect(site_url('unauthorized'));
+      if (!$user || $user != "instructor") {
+	redirect(site_url('unauthorized'));
       }
-    
+      $config["upload_path"] = upload_path();
+      $config["allowed_types"] = 'java';
+      $this->load->library('upload', $config);
+      
+      $this->load->helper('form');
+      $this->load->library('form_validation');
+
+      $data['title'] = 'Create an assignment';
+
+      $this->form_validation->set_rules('name', 'Name', 'required|callback_name_unique');
+      $this->form_validation->set_rules('class', 'Class', 'required');
+      $this->form_validation->set_rules('due_date_start', 'Start Date', 'required|callback_compare_date');
+      $this->form_validation->set_rules('due_date_end', 'End Date', 'required|callback_compare_date');
+      $this->form_validation->set_rules('num_testcases', 'Number of Testcases', 'required|numeric');
+      $this->form_validation->set_rules('points_per_testcase', 'Points per Testcase', 'required|numeric');
+      $this->form_validation->set_rules('total_points', 'Total Points', 'required|numeric');
+      $this->form_validation->set_rules('main_testcase_name', 'Main Testcase', 'required|callback_testcase_matches');
+
+      if ($this->form_validation->run() === FALSE) {
+	//invalid form or get
+	$data['classes'] = $this->class_model->get_classes_by_instructor($this->session->userdata("user_id"));
+	$this->load->view('templates/header', $data);
+	$this->load->view('assignments/create', $data);
+	$this->load->view('templates/footer');
+      } else {
+	//form valid
+	//Upload java files
+	$canPass = true;
+	foreach ($_FILES as $key => $value) {
+	  if (! $this->upload->do_upload($key)) {
+	    $canPass = false;
+	  }
+	}
+	if (!$canPass) {
+	  $data['upload_errors'] = $this->upload->display_errors();
+	  $this->load->view('templates/header', $data);
+	  $this->load->view('assignments/create', $data);
+	  $this->load->view('templates/footer');
+	} else {
+	  //No errors happened uploading
+	  $this->assignment_model->create_assignment();
+	  $this->testcase_model->create_testcase();
+	  //Create directory for all sections
+	  $sections = $this->section_model->get_sections_by_class_name($this->input->post('class'));
+	  $classDir = str_replace(" ", "_", $this->input->post('class'));
+	  $aDir = str_replace(" ", "_", $this->input->post('name'));
+	  foreach($sections as $s) {
+	    mkdir(upload_path().'/'.$classDir.'/'.str_replace(" ", "_", $s['name']).'/'.$aDir);
+	    //Make directory for testfile
+	    mkdir(upload_path().'/'.$classDir.'/'.str_replace(" ", "_", $s['name']).'/'.$aDir.'/testcase');
+	    foreach($_FILES as $key => $value) {
+	      //Copy file to testcase directory
+	      copy(upload_path().'/'.$value['name'], upload_path().'/'.$classDir.'/'.$s['name'].'/'.$aDir.'/testcase/'.$value['name']);
+	    }
+	  }
+	  foreach($_FILES as $key => $value) {
+	    //Remove test file from uploads directory
+	    unlink(upload_path().'/'.$value['name']);
+	  }
+	  redirect(site_url('instructors/view/'.$this->session->userdata("user_id")));
+	}
+      } 
     }
 
+    /**
+      * url: assignments/results
+      * STUDENTS & INSTRUCTORS
+      * Shows results of student's assignment run against test case
+      */
     public function results($sid) {
+      $user = $this->session->userdata('user_id');
+      if (!$user) {
+	redirect(site_url('unauthorized'));
+      }
       //Show results from running testcases
       $path = $this->session->flashdata('path');
       $files = $this->session->flashdata('files');
@@ -187,6 +179,11 @@
       $this->load->view('templates/footer');
     }
 
+    /**
+      * url: assignments/view_submissions/[assignment id]
+      * STUDENTS AND INSTRUCTORS 
+      * Let's students view their past submissions and hints
+      */ 
     public function view_submissions($aid) {
       $user = $this->session->userdata('user_id');
       if (!$user) {
@@ -203,9 +200,14 @@
       $this->load->view('templates/footer');
     }
 
-    public function edit($assignment = FALSE, $class = FALSE) {
+    /**
+      * url: assignments/edit/[assignment id]/[class id]
+      * INSTRUCTORS ONLY
+      * Let's instructor edit an assignment
+      */
+    public function edit($assignment, $class) {
       $user = $this->session->userdata('type');
-      if (!$user || $user != "instructor" || !$assignment || !$class) {
+      if (!$user || $user != "instructor") {
         redirect(site_url('unauthorized'));
       }
       $assignment = $this->assignment_model->get_assignments($assignment);
@@ -259,6 +261,11 @@
       }
     }
 
+    /**
+      * url: assignments/view_grades/[assignment id]/[class id]
+      * INSTRUCTORS ONLY
+      * Shows all grades for students per class, per assignment
+      */
     public function view_grades($id, $class_id) {
       //View all grades per assignment
       $type = $this->session->userdata('type');
@@ -282,14 +289,26 @@
       $this->load->view('templates/footer');
     }
 
+    /**
+      * url: assignments/change_grade
+      * INSTRUCTORS ONLY
+      * Let's instructor change student's grade (via ajax)
+      */
     public function change_grade() {
+      $type = $this->session->userdata('type');
+      if (!$type || $type != "instructor") {
+	redirect(site_url('unauthorized'));
+      }
       $this->load->helper('form');
       $student = $this->student_model->get_student_by_username($this->input->post('student'));
       $this->score_model->update_score($student['id'], $this->input->post('assignment'), $this->input->post('new-grade'));
       redirect(site_url('assignments/view_grades/'.$this->input->post('assignment').'/'.$this->input->post('class')));
     }
 
-    //Make sure start date is less than end date
+    /**
+      * Form Callback Function
+      * Make sure start date is less than end date
+      */
     public function compare_date() {
       $start = new DateTime($this->input->post("due_date_start"));
       $end = new DateTime($this->input->post("due_date_end"));
@@ -301,7 +320,10 @@
       }
     }
 
-    //Make sure assignment name is unique
+    /**
+      * Form Callback Function
+      * Make sure assignment name is unique
+      */
     public function name_unique($name) {
       $query = $this->db->get_where("wgsDB_assignment", array("name" => $name))->row_array();
       if (empty($query)) {
@@ -312,7 +334,10 @@
       }
     }
 
-    //Make sure testcase name is one of the files uploaded
+    /**
+      * Form Callback Function
+      * Make sure main testcase name is one of the files uploaded
+      */
     public function testcase_matches($name) {
       foreach ($_FILES as $key => $value) {
 	$fName = $value['name'];

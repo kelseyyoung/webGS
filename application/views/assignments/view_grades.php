@@ -1,7 +1,8 @@
-
+<style type="text/css">
 #new-grade {
   margin-bottom: 0px !important;
 }
+</style>
 
 <?php include_once(view_url() . 'templates/page_begin.php'); ?>
 

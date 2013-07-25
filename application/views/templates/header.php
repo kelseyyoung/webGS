@@ -15,4 +15,5 @@
       div.container-fluid {
         padding: 10px;
       }
+    </style>
 

@@ -38,26 +38,26 @@
 |
 */
 
+//Assignments
+$route['assignments/create'] = 'assignments/create';
+$route['assignments/results/(:num)'] = 'assignments/results/$1';
+$route['assignments/view_submissions/(:num)'] = 'assignments/view_submissions/$1';
+$route['assignments/edit/(:num)/(:num)'] = 'assignments/edit/$1/$2';
+$route['assignments/view_grades/(:num)/(:num)'] = 'assignments/view_grades/$1/$2';
+//Classes
+$route['classes/view/(:num)'] = 'classes/view/$1';
+$route['classes/student_view/(:num)'] = 'classes/student_view/$1';
+$route['classes/submit_assignment/(:num)'] = 'classes/submit_assignment/$1';
+$route['classes/add_student/(:num)'] = 'classes/add_student/$1';
+$route['classes/add_instructor/(:num)'] = 'classes/add_instructor/$1';
+$route['classes/remove_student/(:num)/(:num)'] = 'classes/remove_student/$1/$2';
+$route['classes/remove_instructor/(:num)/(:num)'] = 'classes/remove_instructor/$1/$2';
+$route['classes/create'] = 'classes/create';
 //Instructors
-$route['instructors/create'] = 'instructors/create';
 $route['instructors/view'] = 'instructors/view';
 $route['instructors/view_grades/(:num)/(:num)'] = 'instructors/view_grades/$1/$2';
 //Students
-$route['students/create'] = 'students/create';
 $route['students/view'] = 'students/view';
-//Classes
-$route['classes/create'] = 'classes/create';
-$route['classes/view/(:num)'] = 'classes/view/$1';
-$route['classes/student_view/(:num)'] = 'classes/student_view/$1';
-$route['classes/add_student/(:num)'] = 'classes/add_student/$1';
-$route['classes/submit_assignment/(:num)'] = 'classes/submit_assignment/$1';
-//Assignments
-$route['assignments/create'] = 'assignments/create';
-$route['assignments/edit/(:num)/(:num)'] = 'assignments/edit/$1/$2';
-$route['assignments/(:any)'] = 'assignments/$1';
-$route['assignments/submit/(:num)'] = 'assignments/submit/$1';
-$route['assignments/results/(:num)'] = 'assignments/results/$1';
-$route['assignments/view_grades/(:num)/(:num)'] = 'assignments/view_grades/$1/$2';
 //Unauthorized
 $route['unauthorized'] = 'unauthorized';
 //Logout

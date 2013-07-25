@@ -1,4 +1,5 @@
-<!--Inline CSS here -->
+<style>
+</style>
 
 <?php include_once(view_url().'templates/page_begin.php'); ?>
 
@@ -139,13 +140,6 @@
   $(".form_datetime").datetimepicker({
     format: "yyyy-mm-dd  hh:ii"
   });
-
-  /*
-  $("#testcase_file").on('change', function(e) {
-    var filename = $(this).val().split('\\').pop();
-    $("#testcase_name").val(filename);
-  });
-  */
 
   $("input#num_testcases").keyup(function() {
     var count = parseInt($(this).val());

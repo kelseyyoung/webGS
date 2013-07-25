@@ -1,4 +1,5 @@
-<!-- Inline CSS here -->
+<style>
+</style>
 
 <?php include_once(view_url().'templates/page_begin.php'); ?>
 
@@ -11,7 +12,6 @@
   </div>
   <div class="row-fluid">
     <div class="span6 offset3">
-      <!--<form class="form-horizontal">-->
       <?php 
         $attr = array('class' => 'form-horizontal');
         echo form_open('', $attr); ?>

@@ -1,4 +1,5 @@
-
+<style>
+</style>
 
 <?php include_once(view_url().'templates/page_begin.php'); ?>
 
