@@ -47,7 +47,6 @@
       <table class="table table-hover">
         <thead>
           <tr>
-            <th>Name</th>
             <th>Username</th>
             <th>Controls</th>
           </tr>
@@ -55,7 +54,6 @@
         <tbody>
         <?php foreach($instructors as $i) { ?>
           <tr>
-            <td><?php echo $i['name']; ?></td>
             <td><?php echo $i['username']; ?></td>
             <td>
               <a type="button" class="remove-instructor btn btn-danger" href="<?php echo site_url('classes/remove_instructor/'.$class["id"].'/'.$i["id"]); ?>">Remove Instructor</a>
@@ -140,7 +138,6 @@
 	      <table id="table-all" class="table table-hover">
 		<thead>
 		  <tr>
-		    <th>Name</th>
 		    <th>Username</th>
 		    <th>Controls</th>
 		  </tr>
@@ -148,7 +145,6 @@
 		<tbody>
 		<?php foreach ($students as $s) { ?>
 		<tr>
-		  <td><?php echo $s['name']; ?></td>
 		  <td><?php echo $s['username']; ?></td>
 		  <td>
 		    <a type="button" class="btn" href="<?php echo site_url('instructors/view_grades/' . $class['id'] .'/' . $s['id']); ?>">View Grades</a>
@@ -164,7 +160,6 @@
 	      <table id="table-<?php echo $s['name']; ?>" class="table table-hover">
 		<thead>
 		  <tr>
-		    <th>Name</th>
 		    <th>Username</th>
 		    <th>Controls</th>
 		  </tr>
@@ -173,7 +168,6 @@
 		  <?php $ss = $student_sections[$s['name']];
 		  foreach($ss as $s) { ?>
 		  <tr>
-		    <td><?php echo $s['name']; ?></td>
 		    <td><?php echo $s['username']; ?></td>
 		    <td>
 		      <a type="button" class="btn" href="#">View Grades</a>
@@ -216,23 +210,21 @@
 
   $("#add-student-form").submit(function(e) {
     e.preventDefault();
-    $.post($(this).attr('action'), {"student": $("#student").val(), 'student-section' : $("#student-section").val()}, function(data) {
+    $.post($(this).attr('action'), $.param($(this).serializeArray()), function(data) {
       data = $.parseJSON(data);
       if (data) {
         //add row to students table
 	var table = $("#students table#table-all tbody");
-        $(table).append("<tr><td>" + data.name + 
-	  "</td><td>" + data.username + 
+        $(table).append("<tr><td>" + data.username + 
 	  "</td><td>" +
 	  "<a type='button' class='btn' href='#'>View Grades</a>" + 
 	  "<a type='button' class='btn btn-danger remove-student' href='<?php echo site_url('classes/remove_student/'. $class['id']); ?>/" + data.id + "'>Remove Student</a>" +
 	  "</td></tr>");
 	var section = $("#student-section").val();
 	table = $("#students table#table-"  + section + " tbody"); 
-	$(table).append("<tr><td>" + data.name + 
-	  "</td><td>" + data.username + 
+	$(table).append("<tr><td>" + data.username + 
 	  "</td><td>" +
-	  "<a type='button' class='btn' href='#'>View Grades</a>" + 
+	  "<a type='button' class='btn' href='<?php echo site_url('instructors/view_grades/'.$class['id']); ?>/" + data.id + "'>View Grades</a>" + 
 	  "<a type='button' class='btn btn-danger remove-student' href='<?php echo site_url('classes/remove_student/'. $class['id']); ?>/" + data.id + "'>Remove Student</a>" +
 	  "</td></tr>");
       } else {
@@ -245,12 +237,12 @@
 
   $("#add-instructor-form").submit(function(e) {
     e.preventDefault();
-    $.post($(this).attr('action'), {"instructor": $("#instructor").val()}, function(data) {
+    $.post($(this).attr('action'), $.param($(this).serializeArray()), function(data) {
       data = $.parseJSON(data);
       if (data) {
         //add row to instructors table
         var table = $("#instructors table tbody");
-        $(table).append("<tr><td>" + data.name + "</td><td>" + data.username + "</td><td>[Section here]</td><td><a type='button' class='btn btn-danger remove-instructor' href='<?php echo site_url('classes/remove_instructor/'. $class["id"]); ?>/" + data.id + "'>Remove Instructor</a></td></tr>");
+        $(table).append("<tr><td>" + data.username + "</td><td>[Section here]</td><td><a type='button' class='btn btn-danger remove-instructor' href='<?php echo site_url('classes/remove_instructor/'. $class["id"]); ?>/" + data.id + "'>Remove Instructor</a></td></tr>");
       } else {
         //show error
         $("#instructors").prev().find('span').html('That instructor already belongs to this class');
@@ -262,7 +254,8 @@
   $(document).on('click', '.remove-instructor', function(e) {
     e.preventDefault();
     var button = $(this);
-    $.post($(this).attr('href'), {}, function(data) {
+    var csrf = $("input[name=webGS_csrf_token]")[0];
+    $.post($(this).attr('href'), {"webGS_csrf_token": $(csrf).val()}, function(data) {
       data = $.parseJSON(data);
       if (!data) {
 	$(button).parent().parent().remove();
@@ -277,7 +270,8 @@
     e.preventDefault();
     var button = $(this);
     var name = $(button).parent().prev().text();
-    $.post($(this).attr('href'), {}, function(data) {
+    var csrf = $("input[name=webGS_csrf_token]")[0];
+    $.post($(this).attr('href'), {"webGS_csrf_token": $(csrf).val()}, function(data) {
       data = $.parseJSON(data);
       if (!data) {
 	$(button).parent().parent().remove();	

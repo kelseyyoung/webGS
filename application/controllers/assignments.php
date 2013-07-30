@@ -27,7 +27,7 @@
 	redirect(site_url('unauthorized'));
       }
       $config["upload_path"] = upload_path();
-      $config["allowed_types"] = 'java';
+      $config["allowed_types"] = '*';
       $this->load->library('upload', $config);
       
       $this->load->helper('form');
@@ -339,13 +339,27 @@
       * Make sure main testcase name is one of the files uploaded
       */
     public function testcase_matches($name) {
+      $ok = false;
       foreach ($_FILES as $key => $value) {
 	$fName = $value['name'];
 	if ($name == $fName) {
-	  return true;
+          $ok = true;
 	}
       }
-      $this->form_validation->set_message('testcase_matches', "No file was uploaded with that name.");
-      return false;
+      if (!$ok) {
+        $this->form_validation->set_message('testcase_matches', "No file was uploaded with that name.");
+        return false;
+      }
+      foreach($_FILES as $key => $value) {
+        $fName = $value['name'];
+        if (substr($fName, -5) != ".java") {
+          $ok = false;
+        }
+      }
+      if (!$ok) {
+        $this->form_validation->set_message('testcase_matches', "Only .java files are allowed to be uploaded");
+        return false;
+      }
+      return true;
     }
   }

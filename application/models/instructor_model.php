@@ -17,10 +17,9 @@
         $query = $this->db->get_where('wgsDB_instructor', array('id' => $id));
         return $query->row_array();
       }
-
+/*
       public function validate_instructor() {
         $username = $this->input->post('username');
-        $password = $this->input->post('password');
         if ($username != "" && $password != "") {
           $query = $this->db->get_where('wgsDB_instructor', array('username' => $username, 'password' => md5($password)));
           return $query->row_array();
@@ -41,7 +40,7 @@
 
         return $this->db->insert('wgsDB_instructor', $data);
       }
-
+*/
       public function get_instructors_by_class($id) {
         $query = $this->db->get_where('wgsDB_class_instructors', array('class_id' => $id))->result();
         $ret = array();

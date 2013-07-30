@@ -16,20 +16,16 @@
         $query = $this->db->get_where('wgsDB_student', array('id' => $id));
         return $query->row_array();
       }
+      public function create_student($username) {
 
-      public function create_student() {
-
-        //$this->load->helper('url');
- 
+        //$this->load->helper('url'); 
         $data = array(
-          'name' => $this->input->post('name'),
-          'username' => $this->input->post('username'),
-          'password' => $this->input->post('password')
+          'username' => $username
         );
 
         return $this->db->insert('wgsDB_student', $data);
       }
-
+/*
       public function validate_student() {
 
         $username = $this->input->post('username');
@@ -41,7 +37,7 @@
           return null;
         }
       }
-
+*/
       public function get_students_by_class($id) {
         //$this->db->order_by("name", "asc");
         $query = $this->db->get_where('wgsDB_student_classes', array('class_id' => $id))->result();

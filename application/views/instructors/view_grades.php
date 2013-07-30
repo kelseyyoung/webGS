@@ -42,6 +42,9 @@
 	    } ?>
 	    </td>
 	    <td>
+              <?php if (empty($submissions[$assignments[$i]['id']])) { ?>
+              <p>No submissions</p>
+              <?php } else { ?>
 	      <div class="btn-group">
 		<a type="button" class="btn dropdown-toggle" data-toggle="dropdown" href="#">View Submissions <span class="caret"></span></a>
 		<ul class="dropdown-menu">
@@ -53,11 +56,16 @@
 		  <?php } ?>
 		</ul>
 	      </div>
+              <?php } ?>
 	    </td>
 	  </tr>
 	<?php } ?>
 	</tbody>
       </table>
+    </div>
+    <div class="hide">
+    <?php echo form_open(''); ?>
+    </form>
     </div>
   </div>
 </div> <!-- End of container -->
@@ -82,7 +90,8 @@
     $(".view-submission").click(function() {
       var path = $(this).data("path");
       var file = $(this).data("filename");
-      $.get("<?php echo site_url('instructors/get_file_contents'); ?>", {"path" : path, "file": file}, function(data) {
+      var csrf = $("input[name=webGS_csrf_token]")[0];
+      $.get("<?php echo site_url('instructors/get_file_contents'); ?>", {"path" : path, "file": file, "webGS_csrf_token": $(csrf).val()}, function(data) {
 	$("#file-contents").text(data);
 	file = file.replace("_", " ");
 	$("#filename").text(file.replaceAt(file.lastIndexOf("."), " "));

@@ -44,6 +44,8 @@
       if (!$user || $user != "instructor") {
 	redirect(site_url('unauthorized'));
       }
+      $this->load->helper('form');
+      $this->load->library('form_validation');
       $class = $this->class_model->get_classes($class_id);
       $assignments = $this->assignment_model->get_assignments_by_class($class_id);
       $scores = $this->score_model->get_scores_by_student($class_id, $id);

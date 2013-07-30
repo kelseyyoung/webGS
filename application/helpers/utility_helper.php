@@ -8,6 +8,10 @@
     return dirname(dirname(dirname(__FILE__))). '/assets/';
   }
 
+  function function_path() {
+    return dirname(dirname(dirname(__FILE__))). '/functions/';
+  }
+
   function upload_path() {
     return dirname(dirname(dirname(__FILE__))). '/uploads/';
     //return $_SERVER['DOCUMENT_ROOT'].'/uploads/';

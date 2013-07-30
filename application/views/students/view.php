@@ -5,7 +5,7 @@
   
   <div class="row-fluid">
     <div class="span12">
-      <h1>Hello, <?php echo $student['name'] ?></h1>
+      <h1>Hello, <?php echo $student['username'] ?></h1>
     </div>
   </div>
   <hr />

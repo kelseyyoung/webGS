@@ -60,6 +60,8 @@ $route['instructors/view_grades/(:num)/(:num)'] = 'instructors/view_grades/$1/$2
 $route['students/view'] = 'students/view';
 //Unauthorized
 $route['unauthorized'] = 'unauthorized';
+//Login
+$route['login'] = 'login';
 //Logout
 $route['logout'] = 'logout';
 //Default = home page

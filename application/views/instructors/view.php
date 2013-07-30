@@ -5,7 +5,7 @@
   
   <div class="row-fluid">
     <div class="span10">
-      <h1>Hello, <?php echo $instructor['name'] ?></h1>
+      <h1>Hello, <?php echo $instructor['username'] ?></h1>
     </div>
     <div class="span2">
       <?php if (!empty($classes)) { ?>

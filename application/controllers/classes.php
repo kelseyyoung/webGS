@@ -181,6 +181,7 @@
       $this->load->library('form_validation');
       $this->form_validation->set_rules('student', 'Student', 'required|callback_unique_in_class[' .$id . ']');
       $this->form_validation->set_rules('student-section', 'Student Section', 'required');
+      
       if ($this->form_validation->run() === TRUE) {
         $this->class_model->add_student($id);
 	$username = $this->input->post('student');

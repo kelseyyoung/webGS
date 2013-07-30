@@ -48,7 +48,6 @@
 	  <table class="table table-hover" id="all">
 	    <thead>
 	      <tr>
-		<th>Name</th>
 		<th>Username</th>
 		<th>Score</th>
 		<th>Actions</th>
@@ -57,7 +56,6 @@
 	    <tbody>
 	    <?php foreach($students as $s) { ?> 
 	      <tr>
-		<td><?php echo $s['name']; ?></td>
 		<td><?php echo $s['username']; ?></td>
 		<td><?php 
 		  //Find score for that student

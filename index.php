@@ -3,6 +3,22 @@
 //require_once('PhpConsole.php');
 //PhpConsole::start();
 
+$purl=$_SERVER["REQUEST_URI"];
+
+session_name('pt_sid');
+session_start();
+
+if(!isset($_COOKIE["CASAUTHOK"]))
+{
+   if(strpos($purl,'index.php')) {
+     $path_redirect = "http://webgs.cs.arizona.edu".str_replace("index.php","index2.php",$purl);
+   } else {
+     $path_redirect = "http://webgs.cs.arizona.edu/index2.php";
+   }
+   header("location: $path_redirect");
+}
+
+
 /*
  *---------------------------------------------------------------
  * APPLICATION ENVIRONMENT
