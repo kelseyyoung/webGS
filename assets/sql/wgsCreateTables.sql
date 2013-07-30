@@ -1,10 +1,7 @@
 BEGIN;
 CREATE TABLE `wgsDB_instructor` (
     `id` integer AUTO_INCREMENT NOT NULL PRIMARY KEY,
-    `name` varchar(50) NOT NULL,
-    `username` varchar(50) NOT NULL UNIQUE,
-    `password` varchar(50) NOT NULL,
-    `is_admin` bool NOT NULL
+    `username` varchar(50) NOT NULL UNIQUE
 )
 ;
 CREATE TABLE `wgsDB_class_instructors` (
@@ -51,9 +48,7 @@ CREATE TABLE `wgsDB_student_classes` (
 ALTER TABLE `wgsDB_student_classes` ADD CONSTRAINT `class_id_refs_id_ea3f2747` FOREIGN KEY (`class_id`) REFERENCES `wgsDB_class` (`id`);
 CREATE TABLE `wgsDB_student` (
     `id` integer AUTO_INCREMENT NOT NULL PRIMARY KEY,
-    `name` varchar(50) NOT NULL,
-    `username` varchar(50) NOT NULL UNIQUE,
-    `password` varchar(50) NOT NULL
+    `username` varchar(50) NOT NULL UNIQUE
 )
 ;
 ALTER TABLE `wgsDB_student_assignments` ADD CONSTRAINT `student_id_refs_id_94ee8385` FOREIGN KEY (`student_id`) REFERENCES `wgsDB_student` (`id`);
