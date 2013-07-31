@@ -104,33 +104,52 @@
       $path = $this->session->flashdata('path');
       $files = $this->session->flashdata('files');
       $id = $this->session->flashdata('assignment_id');
-      //Get results from xml file
-      $xml = new DOMDocument();
-      $xml->load($path."/new/results.xml");
-      $header = $xml->getElementsByTagName('testsuite');
-      $h = $header->item(0);
-      $errors = $h->getAttribute('errors');
-      $num_failures = $h->getAttribute('failures');
-      $tests = $h->getAttribute('tests');
-      $data['errors'] = $errors;
-      $data['failures'] = $num_failures;
-      $data['tests'] = $tests;
-      //Get potential failures
-      $failureArray = array();
-      $failures = $xml->getElementsByTagName('failure');
-      foreach($failures as $f) {
-	$message = $f->getAttribute('message');
-	$i = strpos($message, "expected");
-	if ($i !== false) {
-	  $message = substr($message, 0, $i - 1); 
-	}
-	array_push($failureArray, $message);
+      $errors = null;
+      if ($this->session->flashdata('errors')) {
+        $errors = $this->session->flashdata('errors');
+      }
+      if (!$errors) {
+        //Get results from xml file
+        $xml = new DOMDocument();
+        $xml->load($path."/new/results.xml");
+        $header = $xml->getElementsByTagName('testsuite');
+        $h = $header->item(0);
+        $errors = $h->getAttribute('errors');
+        $num_failures = $h->getAttribute('failures');
+        $tests = $h->getAttribute('tests');
+        $data['errors'] = $errors;
+        $data['failures'] = $num_failures;
+        $data['tests'] = $tests;
+        //Get potential failures
+        $failureArray = array();
+        $failures = $xml->getElementsByTagName('failure');
+        foreach($failures as $f) {
+          $message = $f->getAttribute('message');
+          $i = strpos($message, "expected");
+          if ($i !== false) {
+            $message = substr($message, 0, $i - 1); 
+          }
+          array_push($failureArray, $message);
+        }
+      } else {
+        $data['errors'] = 'compile';
+        $data['failures'] = 'compile';
+        $data['tests'] = 'compile';
+        $failureArray = array();
+        $errorArray = explode("\n", $errors);
+        foreach ($errorArray as $e) {
+          array_push($failureArray, $e);
+        }
       }
 
       //Scoring
       $assignment = $this->assignment_model->get_assignments($id);
       $data['total_points'] = $assignment['total_points'];
-      $newScore = $assignment["points_per_testcase"] * ($tests - $num_failures);
+      if (!$errors) {
+        $newScore = $assignment["points_per_testcase"] * ($tests - $num_failures);
+      } else {
+        $newScore = 0;
+      }
       $data['score'] = $newScore;
       $score = $this->score_model->get_score($sid, $id);
       if (!empty($score)) {

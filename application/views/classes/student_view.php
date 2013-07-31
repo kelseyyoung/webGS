@@ -22,8 +22,8 @@
 	<div class="modal-body">
 	  <div id="first-upload" class="fileupload fileupload-new text-center" data-provides="fileupload">
 	    <span class="btn btn-file">
-	      <span class="btn-large btn-block fileupload-new">Select File</span>
-	      <span class="btn-large btn-block fileupload-exists">Change</span>
+	      <span class="fileupload-new">Select File</span>
+	      <span class="fileupload-exists">Change</span>
 	      <input type="file" name="assignment_submission_1" id="assignment_submission_1" />
 	    </span>
 	    <span class="fileupload-preview"></span>
@@ -44,6 +44,11 @@
 	</div>
       </form>	
     </div> <!-- End of modal -->
+    <?php if(isset($error)) { ?>
+    <div class="alert alert-error">
+      <p><?php echo $error; ?></p>
+    </div>
+    <?php } ?>
     <div id="assignments">
     <?php if (empty($assignments)) { ?>
       <p>No assignments have been created for this class</p>

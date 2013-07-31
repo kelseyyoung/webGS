@@ -16,18 +16,9 @@
       * Main page for students
       */
     public function view() {
-      /**
       $user = $this->session->userdata("type");
       if (!$user) {
 	redirect(site_url('unauthorized'));
-      }
-      **/
-      $purl = $_SERVER['REQUEST_URI'];
-      session_name('pt_sid');
-      session_start();
-
-      if (!isset($_COOKIE['CASAUTHOK'])) {
-        redirect(site_url('login'));
       }
       $data['student'] = $this->student_model->get_students($this->session->userdata('user_id'));
       $data['classes']  = $this->class_model->get_classes_by_student($this->session->userdata('user_id'));

@@ -68,11 +68,12 @@ $xmlentities = array(
             )
           );
 
-          $instructor = $this->instructor_model->get_instructor_by_username($this->session->userdata('netid'));
+          instructor = $this->instructor_model->get_instructor_by_username($this->session->userdata('netid'));
           if ($instructor) {
           //if( false) {
             $this->session->set_userdata('type', 'instructor');
             $this->session->set_userdata('user_id', $instructor['id']);
+            redirect(site_url('instructors/view'));
           } else {
             $student = $this->student_model->get_student_by_username($this->session->userdata('netid'));
             if ($student) {
@@ -84,11 +85,13 @@ $xmlentities = array(
               $this->session->set_userdata('type', 'student');
               $this->session->set_userdata('user_id', $student['id']);
             }
+            //chmod_R(upload_path().'127A_Fall', 0777, 0777);
+            redirect(site_url('students/view'));
           }
         }
       }
+      /*
 
-      //chmod_R(upload_path().'127A_Fall', 0777, 0777);
       $type = $this->session->userdata('type');
       if (!$type) {
 	redirect(site_url('unauthorized'));
@@ -96,6 +99,7 @@ $xmlentities = array(
       if ($type == "student") {
 	//Student
 	$data['student'] = $this->student_model->get_students($this->session->userdata('user_id'));
+        $data['classes'] = $this->class_model->get_classes_by_student($this->session->userdata('user_id'));
 	$data['title'] = "Students";
 	$this->load->view('templates/header', $data);
 	$this->load->view('students/view', $data);
@@ -110,6 +114,7 @@ $xmlentities = array(
 	$this->load->view('instructors/view', $data);
 	$this->load->view('templates/footer');
       }
+      */
     }
 
   }

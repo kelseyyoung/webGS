@@ -73,6 +73,9 @@
 	}
       }
       if ($auth) {
+        if ($this->session->flashdata('error')) {
+          $data['error'] = $this->session->flashdata('error');
+        }
 	$this->load->helper('form');
 	$this->load->library('form_validation');
 	$data['title'] = "View Class";
@@ -116,54 +119,80 @@
 	  $config["upload_path"] = $path . '/new'; 
 	}
       }
-      $config["allowed_types"] = "java";
+      $config["allowed_types"] = "*";
       $this->load->library('upload', $config);
 
       $this->load->helper('form');
 
       $canPass = true;
       foreach ($_FILES as $key => $value) {
-	if (! $this->upload->do_upload($key)) {
-	  $canPass = false;
-	}
+        $fName = $value['name'];
+        if (substr($fName, -5) != ".java") {
+          $canPass = false;
+        }
+        $contents = file_get_contents($value['tmp_name']);
+        if (  strpos($contents, "Process") ||
+              strpos($contents, "Runtime") ||
+              strpos($contents, "getRuntime")) {
+          $canPass = false;
+        }
       }
-      if (!$canPass) {
-	$data['upload_errors'] = $this->upload->display_errors();
-	$this->load->view('templates/header', $data);
-	$this->load->view('classes/student_view', $data);
-	$this->load->view('templates/footer');
+      if ($canPass) {
+        foreach ($_FILES as $key => $value) {
+          if (! $this->upload->do_upload($key)) {
+            $canPass = false;
+          }
+        }
+        if (!$canPass) {
+          $this->session->set_flashdata('error', $this->upload->display_errors());
+          $c = $this->class_model->get_classes_by_name($this->input->post('class_name'));
+          redirect(site_url('classes/student_view/'.$c['id']));
+        } else {
+          //Valid upload
+          $aObj = $this->assignment_model->get_assignment_by_name($this->input->post('assignment_name'));
+          $files = array();
+          foreach ($_FILES as $key => $value) {
+            array_push($files, $value['name']);
+          }
+          chdir($path . '/new');
+          //Copy all files from testcase to here 
+          $string = "cp ../../testcase/* . 2>&1";
+          shell_exec($string);
+          //Compile all java files
+          $string = "javac -cp .:" . asset_path() . "java/junit-4.10.jar:" . asset_path() . "java/ant.jar -d . *.java 2>&1";
+          $output = shell_exec($string);
+          if ($output) {
+            //There was a compile error
+            $this->session->set_flashdata('files', $files);
+            $this->session->set_flashdata('path', $path);
+            $this->session->set_flashdata('assignment_id', $aObj['id']);
+            $this->session->set_flashdata('errors', $output);
+            redirect(site_url('assignments/results/'.$id));
+          } else {
+            //Run testcase
+            $testcase = $this->testcase_model->get_testcases_by_assignment($aObj['id']);
+            $i = strpos($testcase['name'], ".java");
+            $testcaseName = substr($testcase['name'], 0, $i);
+            $string = "java -cp .:" . asset_path() . "java/junit-4.10.jar:" . 
+              asset_path() . "java/ant.jar:" . 
+              asset_path() . "java/ant-junit.jar:" .
+              $path . "/new" .
+              " org.apache.tools.ant.taskdefs.optional.junit.JUnitTestRunner " .
+              $testcaseName .
+              " formatter=org.apache.tools.ant.taskdefs.optional.junit.XMLJUnitResultFormatter," .
+              $path . "/new/results.xml 2>&1";
+            shell_exec($string);
+            //Redirect, set flash data first
+            $this->session->set_flashdata('files', $files);
+            $this->session->set_flashdata('path', $path);
+            $this->session->set_flashdata('assignment_id', $aObj['id']);
+            redirect(site_url('assignments/results/' . $id));
+          }
+        }
       } else {
-	//Valid upload
-	$aObj = $this->assignment_model->get_assignment_by_name($this->input->post('assignment_name'));
-	$files = array();
-	foreach ($_FILES as $key => $value) {
-	  array_push($files, $value['name']);
-	}
-	chdir($path . '/new');
-	//Copy all files from testcase to here 
-	$string = "cp ../../testcase/* . 2>&1";
-	shell_exec($string);
-	//Compile all java files
-	$string = "javac -cp .:" . asset_path() . "java/junit-4.10.jar:" . asset_path() . "java/ant.jar -d . *.java 2>&1";
-	shell_exec($string);
-	//Run testcase
-	$testcase = $this->testcase_model->get_testcases_by_assignment($aObj['id']);
-	$i = strpos($testcase['name'], ".java");
-	$testcaseName = substr($testcase['name'], 0, $i);
-	$string = "java -cp .:" . asset_path() . "java/junit-4.10.jar:" . 
-	  asset_path() . "java/ant.jar:" . 
-	  asset_path() . "java/ant-junit.jar:" .
-	  $path . "/new" .
-	  " org.apache.tools.ant.taskdefs.optional.junit.JUnitTestRunner " .
-	  $testcaseName .
-	  " formatter=org.apache.tools.ant.taskdefs.optional.junit.XMLJUnitResultFormatter," .
-	  $path . "/new/results.xml 2>&1";
-	shell_exec($string);
-	//Redirect, set flash data first
-	$this->session->set_flashdata('files', $files);
-	$this->session->set_flashdata('path', $path);
-	$this->session->set_flashdata('assignment_id', $aObj['id']);
-	redirect(site_url('assignments/results/' . $id));
+        $this->session->set_flashdata('error', "The uploaded files contain prohibited code.");
+        $c = $this->class_model->get_classes_by_name($this->input->post('class_name'));
+        redirect(site_url('classes/student_view/'.$c['id']));
       }
     }
 

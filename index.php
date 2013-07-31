@@ -2,7 +2,7 @@
 
 //require_once('PhpConsole.php');
 //PhpConsole::start();
-
+/*
 $purl=$_SERVER["REQUEST_URI"];
 
 session_name('pt_sid');
@@ -17,6 +17,7 @@ if(!isset($_COOKIE["CASAUTHOK"]))
    }
    header("location: $path_redirect");
 }
+*/
 
 
 /*

@@ -7,13 +7,21 @@
     <div class="span8 offset2">
       <h1>Submission Results</h1>
       <hr>
+      <?php if ($tests != "compile") { ?>
       <p class="lead pull-right">Passed <?php echo ($tests - $failures); ?> out of <?php echo $tests; ?> test cases</p> 
+      <?php } else { ?>
+      <p class="lead pull-right">Compile error occured</p>
+      <?php } ?>
       <h3>
       <?php echo $score; ?>/<?php echo $total_points; ?>
       </h3>
       <div class="progress">
+        <?php if ($tests != "compile") { ?>
 	<div class="bar bar-success" style="width: <?php echo ($tests-$failures)/$tests * 100; ?>%;"></div>
 	<div class="bar bar-danger" style="width: <?php echo $failures/$tests * 100; ?>%;"></div>
+        <?php } else { ?>
+        <div class="bar bar-danger" style="width: 100%"></div>
+        <?php } ?>
       </div>
       <h3>Hints</h3>
       <?php if (!empty($messages)) {
