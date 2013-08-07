@@ -242,7 +242,7 @@
       if (data) {
         //add row to instructors table
         var table = $("#instructors table tbody");
-        $(table).append("<tr><td>" + data.username + "</td><td>[Section here]</td><td><a type='button' class='btn btn-danger remove-instructor' href='<?php echo site_url('classes/remove_instructor/'. $class["id"]); ?>/" + data.id + "'>Remove Instructor</a></td></tr>");
+        $(table).append("<tr><td>" + data.username + "</td><td><a type='button' class='btn btn-danger remove-instructor' href='<?php echo site_url('classes/remove_instructor/'. $class["id"]); ?>/" + data.id + "'>Remove Instructor</a></td></tr>");
       } else {
         //show error
         $("#instructors").prev().find('span').html('That instructor already belongs to this class');

@@ -68,7 +68,7 @@ $xmlentities = array(
             )
           );
 
-          instructor = $this->instructor_model->get_instructor_by_username($this->session->userdata('netid'));
+          $instructor = $this->instructor_model->get_instructor_by_username($this->session->userdata('netid'));
           if ($instructor) {
           //if( false) {
             $this->session->set_userdata('type', 'instructor');
