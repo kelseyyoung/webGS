@@ -141,19 +141,9 @@
     format: "yyyy-mm-dd  hh:ii"
   });
 
-  $("input#num_testcases").keyup(function() {
+  $("input#num_testcases, input#points_per_testcase").keyup(function() {
     var count = parseInt($(this).val());
     var worth = parseInt($("input#points_per_testcase").val());
-    if ((!isNaN(count)) && (!isNaN(worth))) {
-      $("input#total_points").val(count*worth);
-    } else {
-      $("input#total_points").val("");
-    }
-  });
-
-  $("input#points_per_testcase").keyup(function() {
-    var count = parseInt($(this).val());
-    var worth = parseInt($("input#num_testcases").val());
     if ((!isNaN(count)) && (!isNaN(worth))) {
       $("input#total_points").val(count*worth);
     } else {

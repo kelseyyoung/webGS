@@ -27,7 +27,7 @@
       $testcase = $this->db->get_where("wgsDB_testcase", array("assignment_id" => $id))->row_array();
 
       $data = array(
-        'name' => $this->input->post('testcase_name'),
+        'name' => $this->input->post('main_testcase_name'),
         'assignment_id' => $id
       );
       $this->db->where('id', $testcase['id']);

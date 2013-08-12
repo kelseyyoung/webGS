@@ -49,6 +49,7 @@
 	    <thead>
 	      <tr>
 		<th>Username</th>
+                <th>Section</th>
 		<th>Score</th>
 		<th>Actions</th>
 	      </tr>
@@ -57,6 +58,7 @@
 	    <?php foreach($students as $s) { ?> 
 	      <tr>
 		<td><?php echo $s['username']; ?></td>
+                <td><?php echo $s['name']; ?></td>
 		<td><?php 
 		  //Find score for that student
 		  $echo = "--";
@@ -81,12 +83,32 @@
 	  <table id="table-<?php echo $s['name']; ?>" class="table table-hover">
 	    <thead>
 	      <tr>
-		<th>Name</th>
 		<th>Username</th>
 		<th>Score</th>
+                <th>Actions</th>
 	      </tr>
 	    </thead>
 	    <tbody>
+              <?php $ss = $student_sections[$s['name']];
+              foreach($ss as $s) { ?>
+              <tr>
+                <td><?php echo $s['username']; ?></td>
+                <td><?php
+                  //Find score for that student
+                  $echo = "--";
+                  foreach ($scores as $sc) {
+                    if ($sc['student_id'] == $s['id']) {
+                      $echo = $sc['score'] .'/'.$assignment['total_points'];
+                    }
+                  }
+                  echo $echo;
+                ?>
+                </td>
+                <td>
+                  <button class="change-grade btn" type="button">Change Grade</button>
+                </td>
+              </tr>
+              <?php } ?>
 	    </tbody>
 	  </table>
 	</div>
@@ -125,8 +147,8 @@
 
     $(".change-grade").click(function() {
       var currGrade = $(this).parent().prev().text().split('/')[0].trim(); 
-      var total = $(this).parent().prev().text().split('/')[1].trim(); 
-      var username = $(this).parent().prev().prev().text();
+      var total = <?php echo $assignment['total_points']; ?>;
+      var username = $(this).parent().parent().children().first().text();
       $("#new-grade").val(currGrade);
       $("#total").text("/ " + total);
       $("#student").val(username);

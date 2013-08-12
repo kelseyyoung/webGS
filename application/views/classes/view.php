@@ -42,7 +42,14 @@
       <button type="submit" class="btn btn-primary">Add Instructor</button>
     </form>
     <a data-toggle="collapse" data-target="#instructors"><h2>Instructors</h2></a>
-    <div class="hide text-center alert alert-error"><span></span><button class="close">&times;</button></div>
+    <div class="hide text-center alert alert-error" id="instructor-error">
+      <span></span>
+      <button class="close">&times;</button>
+    </div>
+    <div class="hide text-center alert alert-success" id="instructor-success">
+      <span></span>
+      <button class="close">&times;</button>
+    </div>
     <div id="instructors" class="collapse in">
       <table class="table table-hover">
         <thead>
@@ -122,7 +129,14 @@
         <button type="submit" class="btn btn-primary">Add Student</button>
       </form>
       <a data-toggle="collapse" data-target="#students"><h2>Students</h2></a>
-      <div class="hide text-center alert alert-error"><span></span><button class="close">&times;</button></div>
+      <div class="hide text-center alert alert-error" id="student-error">
+        <span></span>
+        <button class="close">&times;</button>
+      </div>
+      <div class="hide text-center alert alert-success" id="student-success">
+        <span></span>
+        <button class="close">&times;</button>
+      </div>
       <div id="students" class="collapse in">
 	<div class="tabbable">
 	  <ul class="nav nav-tabs">
@@ -139,6 +153,7 @@
 		<thead>
 		  <tr>
 		    <th>Username</th>
+                    <th>Section</th>
 		    <th>Controls</th>
 		  </tr>
 		</thead>
@@ -146,6 +161,7 @@
 		<?php foreach ($students as $s) { ?>
 		<tr>
 		  <td><?php echo $s['username']; ?></td>
+                  <td><?php echo $s['name']; ?></td>
 		  <td>
 		    <a type="button" class="btn" href="<?php echo site_url('instructors/view_grades/' . $class['id'] .'/' . $s['id']); ?>">View Grades</a>
 		    <a type="button" class="remove-student btn btn-danger" href="<?php echo site_url('classes/remove_student/'.$class['id'].'/'.$s['id']); ?>">Remove Student</a>
@@ -170,7 +186,7 @@
 		  <tr>
 		    <td><?php echo $s['username']; ?></td>
 		    <td>
-		      <a type="button" class="btn" href="#">View Grades</a>
+		      <a type="button" class="btn" href="<?php echo site_url('instructors/view_grades/' . $class['id'] .'/' . $s['id']); ?>">View Grades</a>
 		      <a type="button" class="remove-student btn btn-danger" href="<?php echo site_url('classes/remove_student/'.$class['id'].'/'.$s['id']); ?>">Remove Student</a>
 		    </td>
 		  </tr>
@@ -227,10 +243,14 @@
 	  "<a type='button' class='btn' href='<?php echo site_url('instructors/view_grades/'.$class['id']); ?>/" + data.id + "'>View Grades</a>" + 
 	  "<a type='button' class='btn btn-danger remove-student' href='<?php echo site_url('classes/remove_student/'. $class['id']); ?>/" + data.id + "'>Remove Student</a>" +
 	  "</td></tr>");
+        $("#student-success > span").html('The student was added successfully');
+        $("#student-success").slideDown();
+        $("#student-error").slideUp();
       } else {
         //show error
-        $("#students").prev().find('span').html('That student already belongs to this class');
-        $("#students").prev().slideDown();
+        $("#student-error > span").html('That student already belongs to this class');
+        $("#student-error").slideDown();
+        $("#student-success").slideUp();
       }
     });
   });
@@ -243,10 +263,14 @@
         //add row to instructors table
         var table = $("#instructors table tbody");
         $(table).append("<tr><td>" + data.username + "</td><td><a type='button' class='btn btn-danger remove-instructor' href='<?php echo site_url('classes/remove_instructor/'. $class["id"]); ?>/" + data.id + "'>Remove Instructor</a></td></tr>");
+        $("#instructor-success > span").html('The instructor was added successfully');
+        $("#instructor-success").slideDown();
+        $("#instructor-error").slideUp();
       } else {
         //show error
-        $("#instructors").prev().find('span').html('That instructor already belongs to this class');
-        $("#instructors").prev().slideDown();
+        $("#instructor-error > span").html('That instructor already belongs to this class');
+        $("#instructor-error").slideDown();
+        $("#instructor-success").slideUp();
       }
     });
   });
@@ -259,9 +283,13 @@
       data = $.parseJSON(data);
       if (!data) {
 	$(button).parent().parent().remove();
+        $("#instructor-success > span").html('The instructor was removed successfully');
+        $("#instructor-success").slideDown();
+        $("#instructor-error").slideUp();
       } else {
-	$("#instructors").prev().find('span').html(data.error);
-	$("#instructors").prev().slideDown();
+	$("#instructor-error > span").html(data.error);
+	$("#instructor-error").slideDown();
+        $("#instructor-success").slideUp();
       }
     });
   });
@@ -278,6 +306,13 @@
 	//Find other row that they're in
 	var otherRow = $("#students table tbody tr td:contains('" + name + "')");
 	$(otherRow).parent().remove();
+        $("#student-success > span").html('The student was removed successfully');
+        $("#student-success").slideDown();
+        $("#student-error").slideUp();
+      } else {
+        $("#student-error > span").html(data.error); //TODO: is there an error?
+        $("#student-error").slideDown();
+        $("#student-success").slideUp();
       }
     });
   });

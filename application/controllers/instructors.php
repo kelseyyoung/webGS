@@ -51,6 +51,7 @@
       $scores = $this->score_model->get_scores_by_student($class_id, $id);
       $student = $this->student_model->get_students($id);
       $section = $this->section_model->get_section_for_student($id, $class_id); 
+      $section = $section[0];
       $submissions = array();
       foreach ($assignments as $a) {
 	$submissions[$a['id']] = array();

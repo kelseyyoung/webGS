@@ -145,7 +145,7 @@
         }
         if (!$canPass) {
           $this->session->set_flashdata('error', $this->upload->display_errors());
-          $c = $this->class_model->get_classes_by_name($this->input->post('class_name'));
+          $c = $this->class_model->get_class_by_name($this->input->post('class_name'));
           redirect(site_url('classes/student_view/'.$c['id']));
         } else {
           //Valid upload
@@ -191,7 +191,7 @@
         }
       } else {
         $this->session->set_flashdata('error', "The uploaded files contain prohibited code.");
-        $c = $this->class_model->get_classes_by_name($this->input->post('class_name'));
+        $c = $this->class_model->get_class_by_name($this->input->post('class_name'));
         redirect(site_url('classes/student_view/'.$c['id']));
       }
     }
@@ -269,6 +269,8 @@
       $instructors = $this->instructor_model->get_instructors_by_class($id);
       if (count($instructors) == 1) {
 	echo json_encode(array("error" => "A class must have at least one instructor"));
+      } else if ($this->session->userdata("user_id") == $iid) {
+        echo json_encode(array("error" => "You cannot remove yourself from this class."));
       } else {
 	$this->class_model->remove_instructor($id, $iid);
 	echo json_encode("");

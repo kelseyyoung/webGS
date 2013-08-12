@@ -17,22 +17,15 @@
         return $query->row_array();
       }
 
-      public function get_classes_by_name($name = FALSE) {
-        if ($name == FALSE) {
-          return null;
-        } else {
-          return $this->db->get_where('wgsDB_class', array('name' => $name))->row_array();
-        }
+      public function get_class_by_name($name) {
+        return $this->db->get_where('wgsDB_class', array('name' => $name))->row_array();
       }
 
-      public function get_classes_by_instructor($id = FALSE) {
-        $query = $this->db->get_where('wgsDB_class_instructors', array('instructor_id' => $id))->result();
-        $ret = array();
-        foreach($query as $key => $value) {
-          $class = $this->db->get_where('wgsDB_class', array('id' => $value->class_id))->row_array();
-          array_push($ret, $class);
-        }
-        return $ret;
+      public function get_classes_by_instructor($id) {
+        $this->db->order_by('wgsDB_class.name', 'asc');
+        $this->db->select('wgsDB_class.id, wgsDB_class.name');
+        $this->db->join('wgsDB_class_instructors', 'wgsDB_class.id = wgsDB_class_instructors.class_id');
+        return $this->db->get_where('wgsDB_class', array('wgsDB_class_instructors.instructor_id' => $id))->result_array();
       }
 
       public function get_class_by_instructor($id, $cid) {
@@ -40,13 +33,10 @@
       }
 
       public function get_classes_by_student($id) {
-	$query = $this->db->get_where('wgsDB_student_classes', array('student_id' => $id))->result();
-	$ret = array();
-	foreach($query as $key => $value) {
-	  $class = $this->db->get_where('wgsDB_class', array('id' => $value->class_id))->row_array();
-	  array_push($ret, $class);
-	}
-	return $ret;
+        $this->db->order_by('wgsDB_class.name', 'asc');
+        $this->db->select('wgsDB_class.id, wgsDB_class.name');
+        $this->db->join('wgsDB_student_classes', 'wgsDB_class.id = wgsDB_student_classes.class_id');
+        return $this->db->get_where('wgsDB_class', array('wgsDB_student_classes.student_id' => $id))->result_array();
       }
 
       public function create_class() {

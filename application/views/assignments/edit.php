@@ -13,7 +13,7 @@
         <div class="control-group <?php if (form_error('name')) { ?>error<?php } ?>">
           <label class="control-label" for="name">Name: </label>
           <div class="controls">
-            <input type="text" id="name" name="name" value="<?php echo set_value('name'); ?>"/>
+            <input type="text" id="name" name="name" value="<?php echo set_value('name'); ?>" readonly/>
             <?php if (form_error('name')) { ?>
             <span class="help-block"><?php echo form_error('name'); ?></span>
             <?php } ?>
@@ -57,21 +57,30 @@
           </div>
         </div>
         <div class="control-group <?php if (form_error('testcase_file')) { ?>error<?php } ?>">
-          <label class="control-label" for="testcase_file">JUnit File: </label>
+          <label class="control-label" for="testcase_file">JUnit Files: </label>
           <div class="controls">
-            <div class="fileupload fileupload-new" data-provides="fileupload">
+            <div id="first-upload" class="fileupload fileupload-new" data-provides="fileupload">
               <span class="btn btn-file">
                 <span class="fileupload-new">Select file</span>
                 <span class="fileupload-exists">Change</span>
-                <input type="file" name="testcase_file" id="testcase_file" />
-                <input type="hidden" name="testcase_name" id="testcase_name" />
+                <input type="file" name="testcase_file_1" id="testcase_file_1" />
               </span>
               <span class="fileupload-preview"></span>
               <a href="#" class="close fileupload-exists" data-dismiss="fileupload" style="float: none">&times;</a>
-              <p id="current_file"></p>
             </div>
             <?php if (form_error('testcase_file')) { ?>
             <span class="help-block"><?php echo form_error('testcase_file'); ?></span>
+            <?php } ?>
+            <button id="add-file" type="button" class="btn btn-success"><i class="icon-plus"></i> Add JUnit File</button>
+            <p id="current-files">Leave empty to keep current files.</p>
+          </div>
+        </div>
+        <div class="control-group <?php if (form_error('main_testcase_name')) { ?>error<?php } ?>">
+          <label class="control-label" for="main_testcase_name">Main Testcase</label>
+          <div class="controls">
+            <input type="text" id="main_testcase_name" name="main_testcase_name" value="<?php echo set_value('main_testcase_name'); ?>"/>
+            <?php if (form_error('main_testcase_name')) { ?>
+            <span class="help-block"><?php echo form_error('main_testcase_name'); ?></span>
             <?php } ?>
           </div>
         </div>
@@ -119,16 +128,15 @@
 
 <!--Inline JS here -->
 <script type="text/javascript">
+
+  var fileCount = 2;
+  var clone = $("#first-upload").clone();
+
   $(".form_datetime").datetimepicker({
     format: "yyyy-mm-dd  hh:ii"
   });
 
-  $("#testcase_file").on('change', function(e) {
-    var filename = $(this).val().split('\\').pop();
-    $("#testcase_name").val(filename);
-  });
-
-  $("input#num_testcases").keyup(function() {
+  $("input#num_testcases, input#points_per_testcase").keyup(function() {
     var count = parseInt($(this).val());
     var worth = parseInt($("input#points_per_testcase").val());
     if ((!isNaN(count)) && (!isNaN(worth))) {
@@ -138,14 +146,13 @@
     }
   });
 
-  $("input#points_per_testcase").keyup(function() {
-    var count = parseInt($(this).val());
-    var worth = parseInt($("input#num_testcases").val());
-    if ((!isNaN(count)) && (!isNaN(worth))) {
-      $("input#total_points").val(count*worth);
-    } else {
-      $("input#total_points").val("");
-    }
+  $("#add-file").click(function() {
+    var newClone = clone.clone();
+    newClone.attr('id', '');
+    newClone.append("<button class='close' data-dismiss='alert' type='button'>&times;</button>");
+    newClone.find('#testcase_file_1').attr('name', 'testcase_file_' + fileCount);
+    newClone.find('#testcase_file_1').attr('id', 'testcase_file_' + fileCount++);
+    $(this).before(newClone);
   });
 
   <?php if ($class) { ?>
@@ -159,5 +166,5 @@
   $("#num_testcases").val("<?php echo $assignment["num_testcases"]; ?>");
   $("#points_per_testcase").val("<?php echo $assignment["points_per_testcase"]; ?>");
   $("#total_points").val("<?php echo $assignment["total_points"]; ?>");
-  $("#current_file").text("Current file: <?php echo $testcase['name']; ?>");
+  $("#main_testcase_name").val("<?php echo $testcase['name']; ?>");
 </script>

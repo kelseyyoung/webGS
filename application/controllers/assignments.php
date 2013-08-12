@@ -44,9 +44,9 @@
       $this->form_validation->set_rules('total_points', 'Total Points', 'required|numeric');
       $this->form_validation->set_rules('main_testcase_name', 'Main Testcase', 'required|callback_testcase_matches');
 
+      $data['classes'] = $this->class_model->get_classes_by_instructor($this->session->userdata("user_id"));
       if ($this->form_validation->run() === FALSE) {
 	//invalid form or get
-	$data['classes'] = $this->class_model->get_classes_by_instructor($this->session->userdata("user_id"));
 	$this->load->view('templates/header', $data);
 	$this->load->view('assignments/create', $data);
 	$this->load->view('templates/footer');
@@ -60,6 +60,12 @@
 	  }
 	}
 	if (!$canPass) {
+          //Delete any files that got uploaded
+          foreach(glob(upload_path().'/*') as $fName) {
+            if (is_file($fName)) {
+              unlink($fName);
+            }
+          }
 	  $data['upload_errors'] = $this->upload->display_errors();
 	  $this->load->view('templates/header', $data);
 	  $this->load->view('assignments/create', $data);
@@ -229,10 +235,15 @@
       if (!$user || $user != "instructor") {
         redirect(site_url('unauthorized'));
       }
+
       $assignment = $this->assignment_model->get_assignments($assignment);
       $class = $this->class_model->get_classes($class);
       $query = $this->class_model->get_class_by_instructor($class['id'], $this->session->userdata('user_id'));
       if ($assignment && $class && $assignment["the_class_id"] == $class["id"] && !empty($query)) {
+        $config["upload_path"] = upload_path();
+        $config["allowed_types"] = "*";
+        $this->load->library("upload", $config);
+
         $this->load->helper('form');
         $this->load->library('form_validation');
 
@@ -243,7 +254,7 @@
         $this->form_validation->set_rules('num_testcases', 'Number of Testcases', 'required|numeric');
         $this->form_validation->set_rules('points_per_testcase', 'Points per Testcase', 'required|numeric');
         $this->form_validation->set_rules('total_points', 'Total Points', 'required|numeric');
-	$this->form_validation->set_rules('main_testcase_name', 'Main Testcase', 'required|callback_testcase_matches');
+	$this->form_validation->set_rules('main_testcase_name', 'Main Testcase', 'required|callback_file_exists'); //TODO: create this callback
 
         $data['title'] = "Edit Assignment";
 	$data['assignment'] = $assignment;
@@ -251,29 +262,58 @@
         $data['testcase'] = $this->testcase_model->get_testcases_by_assignment($data["assignment"]["id"]);
 
         if ($this->form_validation->run() === FALSE) {
+          //invalid form or get
           $this->load->view('templates/header', $data);
           $this->load->view('assignments/edit', $data);
           $this->load->view('templates/footer');
         } else {
           //form valid
-          //Check if new file
-          if (empty($_FILES['testcase_file']['name'])) {
-            $this->assignment_model->update_assignment($data["assignment"]["id"]);
-            redirect(site_url('instructors/view/'.$this->session->userdata("user_id")));
-          } else {
-            //Upload java file
-            if (! $this->upload->do_upload('testcase_file')) {
-              //Error uploading file
-              $data['upload_errors'] = $this->upload->display_errors();
-              $this->load->view('templates/header', $data);
-              $this->load->view('assignments/edit', $data);
-              $this->load->view('templates/footer');
-            } else {
-              $this->assignment_model->update_assignment($data["assignment"]["id"]);
-              $this->testcase_model->update_testcase($data["assignment"]["id"]);
-              redirect(site_url('instructors/view/'.$this->session->userdata("user_id")));
+          //Upload java files
+          $canPass = true;
+          foreach ($_FILES as $key => $value) {
+            if ( !$this->upload->do_upload($key)) {
+              $canPass = false;
             }
-          } 
+          }
+          if (!$canPass) {
+            //Delete any files that got uploaded
+            foreach(glob(upload_path().'/*') as $fName) {
+              if (is_file($fName)) {
+                unlink($fName);
+              }
+            }
+            $data['upload_errors'] = $this->upload->display_errors();
+            $this->load->view('templates/header', $data);
+            $this->load->view('assignments/edit', $data);
+            $this->load->view('templates/footer');
+          } else {
+            //No errors happened uploading
+            $this->assignment_model->update_assignment($data["assignment"]["id"]);
+            $this->testcase_model->update_testcase($assignment['id']); 
+            if (!empty($_FILES)) {
+              //Only upload files if they were uploaded
+              $sections = $this->section_model->get_sections_by_class_name($this->input->post("class"));
+              $classDir = str_replace(" ", "_", $this->input->post("class"));
+              $aDir = str_replace(" ", "_", $this->input->post("name"));
+              foreach($sections as $s) {
+                //Delete all current testcase files
+                foreach(glob(upload_path().'/'.$classDir.'/'.$s['name'].'/'.$aDir.'/testcase/*') as $fName) {
+                  if (is_file($fName)) {
+                    unlink($fName);
+                  }
+                }
+                foreach($_FILES as $key => $value) {
+                  //Copy files to correct directory
+                  copy(upload_path().'/'.$value['name'], upload_path().'/'.$classDir.'/'.$s['name'].'/'.$aDir.'/testcase/'.$value['name']);
+                }
+              }
+              foreach ($_FILES as $key => $value) {
+                //Remove from uploads directory
+                unlink(upload_path().'/'.$value['name']);
+              }
+            }
+            redirect(site_url('instructors/view/'.$this->session->userdata("user_id")));   
+          }
         }
       } else {
         redirect(site_url('unauthorized'));

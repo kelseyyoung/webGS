@@ -17,36 +17,20 @@
         return $query->row_array();
       }
       public function create_student($username) {
-
-        //$this->load->helper('url'); 
         $data = array(
           'username' => $username
         );
 
         return $this->db->insert('wgsDB_student', $data);
       }
-/*
-      public function validate_student() {
 
-        $username = $this->input->post('username');
-        $password = $this->input->post('password');
-        if ($username != "" and $password != "") {
-          $query = $this->db->get_where('wgsDB_student', array('username' => $username, 'password' => md5($password)));
-          return $query->row_array();
-        } else {
-          return null;
-        }
-      }
-*/
       public function get_students_by_class($id) {
-        //$this->db->order_by("name", "asc");
-        $query = $this->db->get_where('wgsDB_student_classes', array('class_id' => $id))->result();
-        $ret = array();
-        foreach ($query as $key => $value) {
-          $student = $this->db->get_where('wgsDB_student', array('id' => $value->student_id))->row_array();
-          array_push($ret, $student);
-        }
-        return $ret;
+        $this->db->order_by("wgsDB_student.username", "asc");
+        $this->db->select("wgsDB_student.id, wgsDB_student.username, wgsDB_section.name");
+        $this->db->join("wgsDB_student_classes", "wgsDB_student.id = wgsDB_student_classes.student_id");
+        $this->db->join("wgsDB_section_students", "wgsDB_section_students.student_id = wgsDB_student_classes.student_id");
+        $this->db->join("wgsDB_section", "wgsDB_section_students.section_id = wgsDB_section.id");
+        return $this->db->get_where("wgsDB_student", array("wgsDB_student_classes.class_id" => $id))->result_array();
       }
 
       public function get_student_by_username($username) {
