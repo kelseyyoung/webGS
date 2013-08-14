@@ -22,9 +22,13 @@
                 $classes = $this->class_model->get_classes_by_student($this->session->userdata("user_id"));
               }
               if ($classes) {
-                foreach ($classes as $c) { ?>
+                foreach ($classes as $c) { 
+                  if ($this->session->userdata("type") == "instructor") { ?>
                 <li><a href="<?php echo site_url("classes/view/".$c['id']); ?>"><?php echo $c['name']; ?></a></li>
+                <?php } else { ?>
+                <li><a href="<?php echo site_url("classes/student_view/".$c['id']); ?>"><?php echo $c['name']; ?></a></li>
                 <?php }
+                }
               } else { ?>
                 <li><a href="#">No Classes Available</a></li>
               <?php } ?>

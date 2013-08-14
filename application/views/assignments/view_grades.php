@@ -14,7 +14,8 @@
 	  <button type="button" class="close" data-dismiss="modal" aria-hidden="ture">&times;</button>
 	  <h3>Change Grade</h3>
 	</div>
-	<?php echo form_open('assignments/change_grade'); ?>
+	<?php $attr = array('id' => 'change-grade-form');  
+        echo form_open('assignments/change_grade', $attr); ?>
 	<div class="modal-body">
 	  <input type="hidden" name="student" id="student"/>
 	  <input type="hidden" name="assignment" id="assignment" value="<?php echo $assignment['id']; ?>"/>
@@ -23,6 +24,11 @@
 	    <input type="text" class="input-mini" name="new-grade" id="new-grade"/>
 	    <span id="total" class="help-inline"></span>
 	  </div>
+          <p></p>
+          <div id="change-grade-error" class="alert alert-error hide">
+            <button class="close" type="button">&times;</button>
+            <span></span>
+          </div>
 	</div>
 	<div class="modal-footer">
 	  <button type="submit" name="submit" class="btn btn-primary">Change Grade</button>
@@ -153,6 +159,22 @@
       $("#total").text("/ " + total);
       $("#student").val(username);
       $("#change-grade-modal").modal('show');
+    });
+
+    $("#change-grade-form").submit(function() {
+      var newGrade = $("#new-grade").val();
+      if (!isNaN(newGrade)) {
+        return true;
+      } else {
+        $("#change-grade-error > span").html("The grade must be a number.");
+        $("#change-grade-error").slideDown();
+        //Not a number, show error and don't submit
+        return false;
+      }
+    });
+
+    $("button.close").click(function() {
+      $(this).parent().slideUp();
     });
 
   });

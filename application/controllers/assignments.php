@@ -421,4 +421,12 @@
       }
       return true;
     }
+
+    /**
+     * Form Callback Function
+     * Make sure Main Testcase file was uploaded
+     * OR is currently uploaded (for edit)
+     */
+    public function file_exists($file) {
+    }
   }

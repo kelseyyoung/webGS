@@ -20,13 +20,10 @@
       $sections = $this->db->get_where("wgsDB_section", array("the_class_id" => $id))->result_array();
       $ret = array();
       foreach($sections as $s) {
-	$students = $this->db->get_where('wgsDB_section_students', array('section_id'=> $s['id']))->result_array();	
-	$section = array();
-	foreach($students as $st) {
-	  $student = $this->db->get_where('wgsDB_student', array('id' => $st['student_id']))->row_array();
-	  array_push($section, $student);
-	}
-	$ret[$s['name']] = $section;
+        $this->db->order_by("wgsDB_student.username", "asc");
+        $this->db->select("wgsDB_student.id, wgsDB_student.username");
+        $this->db->join("wgsDB_section_students", "wgsDB_section_students.student_id = wgsDB_student.id");
+        $ret[$s['name']] = $this->db->get_where("wgsDB_student", array("wgsDB_section_students.section_id" => $s['id']))->result_array();
       }
       return $ret;
     }

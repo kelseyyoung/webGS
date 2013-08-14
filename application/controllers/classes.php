@@ -216,7 +216,7 @@
 	$username = $this->input->post('student');
         echo json_encode($this->student_model->get_student_by_username($username));
       } else {
-        echo json_encode("");
+        echo json_encode(array("error" => form_error('student')));
       }
     }
 
@@ -352,6 +352,11 @@
     public function unique_in_class($student, $id) {
       //get id of student
       $student_row = $this->db->get_where('wgsDB_student', array('username' => $student))->row_array();
+      if (empty($student_row)) {
+        //Check if student exists
+        $this->form_validation->set_message("unique_in_class", "That student does not exist");
+        return false;
+      }
       $query = $this->db->get_where('wgsDB_student_classes', array("student_id" => $student_row['id'], "class_id" => $id))->row_array();
       if (empty($query)) {
         return true;

@@ -39,7 +39,7 @@
       echo form_open('classes/add_instructor/'.$class['id'], $attr);
     ?>
       <input type="text" name="instructor" autocomplete="off" id="instructor" class="search-query" placeholder="Search by username">
-      <button type="submit" class="btn btn-primary">Add Instructor</button>
+      <button type="button" class="btn btn-primary" id="add-instructor-button">Add Instructor</button>
     </form>
     <a data-toggle="collapse" data-target="#instructors"><h2>Instructors</h2></a>
     <div class="hide text-center alert alert-error" id="instructor-error">
@@ -126,12 +126,12 @@
 	  <option value="<?php echo $s["name"]; ?>">Section <?php echo $s['name']; ?></option>
 	  <?php } ?>
 	</select>
-        <button type="submit" class="btn btn-primary">Add Student</button>
+        <button type="button" class="btn btn-primary" id="add-student-button">Add Student</button>
       </form>
       <a data-toggle="collapse" data-target="#students"><h2>Students</h2></a>
       <div class="hide text-center alert alert-error" id="student-error">
-        <span></span>
         <button class="close">&times;</button>
+        <span></span>
       </div>
       <div class="hide text-center alert alert-success" id="student-success">
         <span></span>
@@ -224,11 +224,16 @@
 
   var class_id="<?php echo $class['id'];?>";
 
+  $("#add-student-button").click(function() {
+    $("#add-student-form").submit();
+  });
+
   $("#add-student-form").submit(function(e) {
     e.preventDefault();
     $.post($(this).attr('action'), $.param($(this).serializeArray()), function(data) {
       data = $.parseJSON(data);
-      if (data) {
+      console.log(data);
+      if (!data.error) {
         //add row to students table
 	var table = $("#students table#table-all tbody");
         $(table).append("<tr><td>" + data.username + 
@@ -248,11 +253,15 @@
         $("#student-error").slideUp();
       } else {
         //show error
-        $("#student-error > span").html('That student already belongs to this class');
+        $("#student-error > span").html(data.error);
         $("#student-error").slideDown();
         $("#student-success").slideUp();
       }
     });
+  });
+
+  $("#add-instructor-button").click(function() {
+    $("#add-instructor-form").submit();
   });
 
   $("#add-instructor-form").submit(function(e) {
@@ -310,7 +319,7 @@
         $("#student-success").slideDown();
         $("#student-error").slideUp();
       } else {
-        $("#student-error > span").html(data.error); //TODO: is there an error?
+        $("#student-error > span").html(data.error); 
         $("#student-error").slideDown();
         $("#student-success").slideUp();
       }
