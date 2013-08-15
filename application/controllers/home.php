@@ -46,13 +46,6 @@ $xmlentities = array(
           echo ("Authentication failure");
           exit;
         } else {
-          //Set session
-          //session_name('pt_sid');
-          //session_start();
-          //$_SESSION['valid'] = 1;
-          //$_SESSION['netid'] = $user['USER'];
-          //$_SESSION['dbkey'] = $user['DBKEY'];
-          //$_SESSION['emplId'] = $user['EMPLID'];
           if (!isset($user['DBKEY'])) {
             $user['DBKEY'] = "";
           }
@@ -69,8 +62,8 @@ $xmlentities = array(
           );
 
           $instructor = $this->instructor_model->get_instructor_by_username($this->session->userdata('netid'));
-          if ($instructor) {
-          //if( false) {
+          //if ($instructor) {
+          if( false) {
             $this->session->set_userdata('type', 'instructor');
             $this->session->set_userdata('user_id', $instructor['id']);
             redirect(site_url('instructors/view'));
@@ -85,36 +78,11 @@ $xmlentities = array(
               $this->session->set_userdata('type', 'student');
               $this->session->set_userdata('user_id', $student['id']);
             }
-            //chmod_R(upload_path().'127A_Fall', 0777, 0777);
+            chmod_R(upload_path().'127A_Fall', 0777, 0777);
             redirect(site_url('students/view'));
           }
         }
       }
-      /*
-
-      $type = $this->session->userdata('type');
-      if (!$type) {
-	redirect(site_url('unauthorized'));
-      }
-      if ($type == "student") {
-	//Student
-	$data['student'] = $this->student_model->get_students($this->session->userdata('user_id'));
-        $data['classes'] = $this->class_model->get_classes_by_student($this->session->userdata('user_id'));
-	$data['title'] = "Students";
-	$this->load->view('templates/header', $data);
-	$this->load->view('students/view', $data);
-	$this->load->view('templates/footer');
-      } else {
-	//Instructor
-	$data['instructor'] = $this->instructor_model->get_instructors($this->session->userdata('user_id'));
-	$data['title'] = "Instructors";
-	$data['classes'] = $this->class_model->get_classes_by_instructor($this->session->userdata('user_id'));
-
-	$this->load->view('templates/header', $data);
-	$this->load->view('instructors/view', $data);
-	$this->load->view('templates/footer');
-      }
-      */
     }
 
   }

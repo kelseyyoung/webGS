@@ -11,10 +11,10 @@
     }
 
     /**
-      * url: students/view
-      * STUDENTS & INSTRUCTORS
-      * Main page for students
-      */
+     * url: students/view
+     * STUDENTS & INSTRUCTORS
+     * Main page for students
+     */
     public function view() {
       $user = $this->session->userdata("type");
       if (!$user) {
@@ -30,3 +30,4 @@
     }
 
   }
+?>

@@ -142,7 +142,7 @@
   });
 
   $("input#num_testcases, input#points_per_testcase").keyup(function() {
-    var count = parseInt($(this).val());
+    var count = parseInt($("input#num_testcases").val());
     var worth = parseInt($("input#points_per_testcase").val());
     if ((!isNaN(count)) && (!isNaN(worth))) {
       $("input#total_points").val(count*worth);

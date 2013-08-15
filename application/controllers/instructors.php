@@ -15,10 +15,10 @@
     }
 
     /**
-      * url: instructors/view
-      * INSTRUCTORS ONLY
-      * Main page for instructors
-      */
+     * url: instructors/view
+     * INSTRUCTORS ONLY
+     * Main page for instructors
+     */
     public function view() {
       $user = $this->session->userdata("type");
       if (!$user || $user != "instructor") {
@@ -34,10 +34,10 @@
     }
 
     /**
-      * url: instructors/view_grades/[class id]/[student id]
-      * INSTRUCTORS ONLY
-      * View grades for a student in a class
-      */
+     * url: instructors/view_grades/[class id]/[student id]
+     * INSTRUCTORS ONLY
+     * View grades for a student in a class
+     */
     public function view_grades($class_id, $id) {
       //View grades of a student per class
       $user = $this->session->userdata('type');
@@ -81,10 +81,10 @@
     }
 
     /**
-      * url: instructors/get_file_contents
-      * INSTRUCTORS ONLY
-      * Returns contents of requested file via ajax
-      */
+     * url: instructors/get_file_contents
+     * INSTRUCTORS ONLY
+     * Returns contents of requested file via ajax
+     */
     public function get_file_contents() {
       $type = $this->session->userdata('type');
       if (!$type || $type != "instructor") {

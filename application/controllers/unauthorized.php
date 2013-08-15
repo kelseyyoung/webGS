@@ -15,3 +15,4 @@ class Unauthorized extends CI_Controller {
   }
 }
 
+?>

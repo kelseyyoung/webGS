@@ -16,10 +16,10 @@
     }
 
     /**
-      * url: classes/view/[class id]
-      * INSTRUCTORS ONLY
-      * Instructor view of classes
-      */
+     * url: classes/view/[class id]
+     * INSTRUCTORS ONLY
+     * Instructor view of classes
+     */
     public function view($id) {
       $user = $this->session->userdata('type');
       if (!$user || $user != "instructor") {
@@ -56,10 +56,10 @@
     }
 
     /**
-      * url: classes/student_view/[class id]
-      * STUDENTS & INSTRUCTORS
-      * Student view of class
-      */
+     * url: classes/student_view/[class id]
+     * STUDENTS & INSTRUCTORS
+     * Student view of class
+     */
     public function student_view($id) {
       $user = $this->session->userdata('type');
       if (!$user) {
@@ -91,10 +91,10 @@
     }
 
     /**
-      * url: classes/submit_assignment/[student id]
-      * STUDENTS & INSTRUCTORS
-      * Submits an assignment
-      */
+     * url: classes/submit_assignment/[student id]
+     * STUDENTS & INSTRUCTORS
+     * Submits an assignment
+     */
     public function submit_assignment($id) {
       $user = $this->session->userdata('user_id');
       if (!$user) {
@@ -197,10 +197,10 @@
     }
 
     /**
-      * url: classes/add_student/[class id]
-      * INSTRUCTORS ONLY
-      * Allows instructor to add a student to a class
-      */
+     * url: classes/add_student/[class id]
+     * INSTRUCTORS ONLY
+     * Allows instructor to add a student to a class
+     */
     public function add_student($id) { 
       $type = $this->session->userdata('type');
       if (!$type || $type != "instructor") {
@@ -221,10 +221,10 @@
     }
 
     /**
-      * url: classes/add_instructor/[class id]
-      * INSTRUCTORS ONLY
-      * Adds instructor to a class
-      */
+     * url: classes/add_instructor/[class id]
+     * INSTRUCTORS ONLY
+     * Adds instructor to a class
+     */
     public function add_instructor($id) {
       $type = $this->session->userdata('type');
       if (!$type || $type != "instructor") {
@@ -243,10 +243,10 @@
     }
 
     /**
-      * url: classes/remove_student/[class id]/[student id]
-      * INSTRUCTORS ONLY
-      * Removes a student from a class
-      */
+     * url: classes/remove_student/[class id]/[student id]
+     * INSTRUCTORS ONLY
+     * Removes a student from a class
+     */
     public function remove_student($id, $sid) { 
       $type = $this->session->userdata('type');
       if (!$type || $type != "instructor") {
@@ -257,10 +257,10 @@
     }
     
     /**
-      * url: classes/remove_instructor/[class id]/[instructor id]
-      * INSTRUCTORS ONLY
-      * Removes an instructor from a class as long as they aren't the last one
-      */
+     * url: classes/remove_instructor/[class id]/[instructor id]
+     * INSTRUCTORS ONLY
+     * Removes an instructor from a class as long as they aren't the last one
+     */
     public function remove_instructor($id, $iid) {
       $type = $this->session->userdata('type');
       if (!$type || $type != "instructor") {
@@ -278,10 +278,10 @@
     }
 
     /**
-      * url: classes/create
-      * INSTRUCTORS ONLY
-      * Creates a class
-      */
+     * url: classes/create
+     * INSTRUCTORS ONLY
+     * Creates a class
+     */
     public function create() {
       $user = $this->session->userdata("type");
       if (!$user || $user != "instructor") {
@@ -306,19 +306,19 @@
 	$this->class_model->create_class();
 	//Create directory for class
 	$classDir = str_replace(" ", "_", $this->input->post('name'));
-	mkdir(upload_path().'/'.$classDir);
+	mkdir(upload_path().$classDir);
 	$sections = explode(",", $this->input->post('sections'));
 	foreach ($sections as $s) {
-	  mkdir(upload_path().'/'.$classDir.'/'.$s);
+	  mkdir(upload_path().$classDir.'/'.$s);
 	}
 	redirect(site_url('instructors/view/'.$this->session->userdata('user_id')));
       } 
     }
 
     /**
-      * Form Callback Function
-      * Makes sure all sections submitted are unique
-      */
+     * Form Callback Function
+     * Makes sure all sections submitted are unique
+     */
     public function sections_unique($list) {
       $sections = explode(",", $list);
       $is_unique = count($sections) == count(array_unique($sections));
@@ -331,9 +331,9 @@
     }
 
     /**
-      * Form Callback Function
-      * Makes sure number of sections entered matches the actual sections entered
-      */
+     * Form Callback Function
+     * Makes sure number of sections entered matches the actual sections entered
+     */
     public function matches_num($list) {
       $num_sections = $this->input->post('num_sections');
       $sections = explode(",", $list);
@@ -346,9 +346,9 @@
     }
 
     /**
-      * Form Callback Function
-      * Makes sure student isn't added twice to class
-      */
+     * Form Callback Function
+     * Makes sure student isn't added twice to class
+     */
     public function unique_in_class($student, $id) {
       //get id of student
       $student_row = $this->db->get_where('wgsDB_student', array('username' => $student))->row_array();
@@ -367,9 +367,9 @@
     }
 
     /**
-      * Form Callback Function
-      * Makes sure instructor isn't added twice to class
-      */
+     * Form Callback Function
+     * Makes sure instructor isn't added twice to class
+     */
     public function unique_instructor($instructor, $id) {
       $instructor_row = $this->db->get_where('wgsDB_instructor', array('username' => $instructor))->row_array();
       $query = $this->db->get_where('wgsDB_class_instructors', array('class_id' => $id, 'instructor_id' => $instructor_row['id']))->row_array();
@@ -382,9 +382,9 @@
     }
 
     /**
-      * Form Callback Function
-      * Make sure class name is unique
-      */
+     * Form Callback Function
+     * Make sure class name is unique
+     */
     public function name_unique($name) {
       $query = $this->db->get_where("wgsDB_class", array("name" => $name))->row_array();
       if (empty($query)) {
@@ -394,4 +394,4 @@
         return false;
       }
     }
-  }
+  } ?>
