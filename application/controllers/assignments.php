@@ -325,6 +325,34 @@
     }
 
     /**
+     * url: assignments/download_grades
+     * INSTRUCTORS ONLY
+     * Constructs CSV file for a certain assignment & section, then downloads
+     */
+    public function download_grades() {
+      $type = $this->session->userdata("type");
+      if (!$type || $type != "instructor") {
+        redirect(site_url('unauthorized'));
+      }
+      $csvStr = "";
+      $assignment = $_GET['assignment'];
+      $section = $_GET['section'];
+      //Get grades
+      $scores = $this->score_model->get_csv_scores($assignment, $section);
+      //Write header
+      $csvStr .= "Username,".$assignment." Points Grade ".
+        "<Numeric MaxPoints:100 Weight:7.7 Category:Assignments ".
+        "CategoryWeight:45>,End-of-Line Indicator\n";
+      foreach ($scores as $s) {
+        $csvStr .= "#".$s['username'].",".$s['score'].",#\n";
+      }
+      //Construct CSV string
+      //Download
+      $this->load->helper('download');
+      force_download("D2LGrades_".str_replace(" ", "_", $assignment).".csv", $csvStr);
+    }
+
+    /**
      * url: assignments/view_grades/[assignment id]/[class id]
      * INSTRUCTORS ONLY
      * Shows all grades for students per class, per assignment

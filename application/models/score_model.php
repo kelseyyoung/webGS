@@ -41,6 +41,15 @@
       );
       return $this->db->insert('wgsDB_score', $data);
     }
+
+    public function get_csv_scores($assignment, $section) {
+      $assignment = $this->db->get_where("wgsDB_assignment", array("name" => $assignment))->row_array();
+      $this->db->order_by("wgsDB_student.username", "asc");
+      $this->db->select("wgsDB_student.username, wgsDB_score.score");
+      $this->db->join("wgsDB_section_students", "wgsDB_section_students.student_id = wgsDB_score.student_id");
+      $this->db->join("wgsDB_student", "wgsDB_student.id = wgsDB_score.student_id");
+      return $this->db->get_where("wgsDB_score", array("wgsDB_score.assignment_id" => $assignment['id'], "wgsDB_section_students.section_id" => $section))->result_array();
+    }
   }
 
 ?>

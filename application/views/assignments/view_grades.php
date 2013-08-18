@@ -86,6 +86,7 @@
 	</div>
 	<?php foreach($all_sections as $s) { ?>
 	<div class="tab-pane" id="<?php echo $s['name']; ?>">
+          <button class="btn btn-inverse pull-right" onclick="downloadGrades('<?php echo $s['id']; ?>');">Download Grades</button>
 	  <table id="table-<?php echo $s['name']; ?>" class="table table-hover">
 	    <thead>
 	      <tr>
@@ -178,4 +179,9 @@
     });
 
   });
+
+  function downloadGrades(section) {
+    var assignment = "<?php echo $assignment['name']; ?>";
+    window.open("<?php echo site_url("assignments/download_grades"); ?>/?assignment="+assignment+"&section="+section);
+  }
 </script>
