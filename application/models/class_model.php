@@ -64,6 +64,13 @@
         return $this->db->insert('wgsDB_student_classes', array('student_id' => $squery['id'], 'class_id' => $id));
       }
 
+      public function add_student_import($cid, $student, $section) {
+        $section_query = $this->db->get_where("wgsDB_section", array("name" => $section, 'the_class_id' => $cid))->row_array();
+        $student_query = $this->db->get_where("wgsDB_student", array("username" => $student))->row_array();
+        $this->db->insert("wgsDB_section_students", array("section_id" => $section_query['id'], 'student_id' => $student_query['id']));
+        return $this->db->insert('wgsDB_student_classes', array("student_id" => $student_query['id'], 'class_id' => $cid));
+      }
+
       public function add_instructor($id) {
         $iquery = $this->db->get_where('wgsDB_instructor', array('username' => $this->input->post('instructor')))->row_array();
         return $this->db->insert('wgsDB_class_instructors', array('class_id' => $id, 'instructor_id' => $iquery['id']));

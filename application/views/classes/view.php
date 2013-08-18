@@ -133,6 +133,26 @@
         <button class="close">&times;</button>
         <span></span>
       </div>
+      <div style="text-align: right">
+        <?php echo form_open_multipart('classes/upload_students/'.$class['id']); ?>
+        <span class="fileupload fileupload-new" data-provides="fileupload">
+          <span class="btn btn-file">
+            <span class="fileupload-new">Upload Students</span>
+            <span class="fileupload-exists">Change</span>
+            <input type="file" name="students_file" id="students_file"/>
+          </span>
+          <span class="fileupload-preview"></span>
+          <a href="#" class="close fileupload-exists" data-dismiss="fileupload" style="float: none">&times;</a>
+        </span>
+        <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+      </div>
+      <?php if (isset($upload_students_error)) { ?>
+      <div class="alert alert-error">
+        <button class="close" type="button">&times;</button>
+        <span><?php echo $upload_students_error; ?></span>
+      </div>
+      <?php } ?>
       <div class="hide text-center alert alert-success" id="student-success">
         <span></span>
         <button class="close">&times;</button>
@@ -232,7 +252,6 @@
     e.preventDefault();
     $.post($(this).attr('action'), $.param($(this).serializeArray()), function(data) {
       data = $.parseJSON(data);
-      console.log(data);
       if (!data.error) {
         //add row to students table
 	var table = $("#students table#table-all tbody");
@@ -319,7 +338,7 @@
         $("#student-success").slideDown();
         $("#student-error").slideUp();
       } else {
-        $("#student-error > span").html(data.error); 
+        $("#student-error > span").html("An error occurred while trying to remove the student."); 
         $("#student-error").slideDown();
         $("#student-success").slideUp();
       }

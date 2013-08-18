@@ -36,4 +36,9 @@
       public function get_student_by_username($username) {
         return $this->db->get_where('wgsDB_student', array("username" => $username))->row_array();
       }
+
+      public function student_exists_in_class($student, $cid) {
+        $s = $this->db->get_where("wgsDB_student", array("username" => $student))->row_array();
+        return $this->db->get_where("wgsDB_student_classes", array("student_id" => $s['id'], "class_id" => $cid))->row_array();
+      }
   }

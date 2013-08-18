@@ -61,6 +61,9 @@ $xmlentities = array(
             )
           );
 
+          $this->load->helper('cookie');
+          set_cookie('CASAUTHOK', $_COOKIE['CASAUTHOK']);
+
           $instructor = $this->instructor_model->get_instructor_by_username($this->session->userdata('netid'));
           if ($instructor) {
           //if( false) {

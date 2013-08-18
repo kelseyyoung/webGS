@@ -45,6 +45,7 @@ $route['assignments/view_submissions/(:num)'] = 'assignments/view_submissions/$1
 $route['assignments/edit/(:num)/(:num)'] = 'assignments/edit/$1/$2';
 $route['assignments/view_grades/(:num)/(:num)'] = 'assignments/view_grades/$1/$2';
 $route['assignments/download_grades'] = 'assignments/download_grades';
+$route['assignments/change_grade_instructors'] = 'assignments/change_grade_instructors';
 //Classes
 $route['classes/view/(:num)'] = 'classes/view/$1';
 $route['classes/student_view/(:num)'] = 'classes/student_view/$1';

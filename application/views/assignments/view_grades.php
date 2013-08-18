@@ -11,7 +11,7 @@
       <!--Change grade modal-->
       <div class="modal hide fade" id="change-grade-modal">
 	<div class="modal-header">
-	  <button type="button" class="close" data-dismiss="modal" aria-hidden="ture">&times;</button>
+	  <button type="button" class="close ignore-slide" data-dismiss="modal" aria-hidden="true">&times;</button>
 	  <h3>Change Grade</h3>
 	</div>
 	<?php $attr = array('id' => 'change-grade-form');  
@@ -175,7 +175,9 @@
     });
 
     $("button.close").click(function() {
-      $(this).parent().slideUp();
+      if (!$(this).hasClass("ignore-slide")) {
+        $(this).parent().slideUp();
+      }
     });
 
   });

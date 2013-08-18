@@ -397,6 +397,22 @@
     }
 
     /**
+     * url: assignments/change_grade_instructors
+     * INSTRUCTORS ONLY
+     * Let's instructor change grade from instructors/view_grades
+     */
+    public function change_grade_instructors() {
+      $type = $this->session->userdata('type');
+      if (!$type || $type != "instructor") {
+	redirect(site_url('unauthorized'));
+      }
+      $this->load->helper('form');
+      $student = $this->student_model->get_student_by_username($this->input->post('student'));
+      $this->score_model->update_score($student['id'], $this->input->post('assignment'), $this->input->post('new-grade'));
+      redirect(site_url('instructors/view_grades/'.$this->input->post('class').'/'.$student['id']));
+    }
+
+    /**
      * Form Callback Function
      * Make sure start date is less than end date
      */
@@ -431,7 +447,8 @@
      */
     public function testcase_matches($name) {
       if (substr($name, -5) != ".java") {
-        $this->form_validation->set_message("The main testcase must be a .java file.");
+        //Assure main testcase is a .java file
+        $this->form_validation->set_message("testcase_matches", "The main testcase must be a .java file.");
         return false;
       }
       $ok = false;
@@ -447,12 +464,12 @@
       }
       foreach($_FILES as $key => $value) {
         $fName = $value['name'];
-        if (substr($fName, -5) != ".java") {
+        if (substr($fName, -5) != ".java" && substr($fName, -4) != ".txt") {
           $ok = false;
         }
       }
       if (!$ok) {
-        $this->form_validation->set_message('testcase_matches', "Only .java files are allowed to be uploaded");
+        $this->form_validation->set_message('testcase_matches', "Only .java and .txt files are allowed to be uploaded");
         return false;
       }
       return true;
@@ -465,7 +482,8 @@
      */
     public function file_exists($name, $pathData) {
       if (substr($name, -5) != ".java") {
-        $this->form_validation->set_message("The main testcase must be a .java file.");
+        //Assure main testcase is a .java file
+        $this->form_validation->set_message("file_exists", "The main testcase must be a .java file.");
         return false;
       }
       if (!empty($_FILES)) {
@@ -506,12 +524,13 @@
         }
         foreach($_FILES as $key => $value) {
           $fName = $value['name'];
-          if (substr($fName, -5) != ".java") {
+          if (substr($fName, -5) != ".java" && substr($fName, -4) != ".txt") {
+            //Only .java and .txt files are allowed
             $ok = false;
           }
         }
         if (!$ok) {
-          $this->form_validation->set_message('file_exists', "Only .java files are allowed to be uploaded");
+          $this->form_validation->set_message('file_exists', "Only .java and .txt files are allowed to be uploaded.");
           return false;
         }
         return true;

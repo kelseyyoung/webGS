@@ -37,6 +37,9 @@
         $this->load->library('form_validation');
         $this->form_validation->set_rules('student', 'Student', 'required|callback_unique_in_class[' .$id . ']');
         $this->form_validation->set_rules('instructor', 'Instructor', 'required|callback_unique_instructor[' .$id. ']');
+        if ($this->session->flashdata("upload_students_error")) {
+          $data['upload_students_error'] = $this->session->flashdata("upload_students_error");
+        }
         $data['class'] = $this->class_model->get_classes($id);
         $data['assignments'] = $this->assignment_model->get_assignments_by_class($id);
         $data['students'] = $this->student_model->get_students_by_class($id);
@@ -194,6 +197,55 @@
         $c = $this->class_model->get_class_by_name($this->input->post('class_name'));
         redirect(site_url('classes/student_view/'.$c['id']));
       }
+    }
+
+    /**
+     * url: classes/upload_students/[class id]
+     * INSTRUCTORS ONLY
+     * Processes file to upload students to a class
+     */
+    public function upload_students($class) {
+      $type = $this->session->userdata('type');
+      if (!$type || $type != "instructor") {
+        redirect(site_url('unauthorized'));
+      }
+      $this->load->helper('form');
+      $this->load->library('form_validation');
+      $file = $_FILES['students_file'];
+      if (substr($file['name'], -4) != ".txt") {
+        $this->session->set_flashdata("upload_students_error", "Only .txt files are allowed to be uploaded.");
+        redirect(site_url("classes/view/".$class));
+      }
+      $contents = file_get_contents($file['tmp_name']);
+      $contents = explode("\n", $contents);
+      $errors = "";
+      foreach ($contents as $line) {
+        if ($line) {
+          $line = explode(",", $line);
+          $name = $line[0];
+          $section = $line[1];
+          //See if student exists, if not, create an account for them
+          $studentTest = $this->student_model->get_student_by_username($name);
+          if (empty($studentTest)) {
+            $this->student_model->create_student($name);
+          }
+          //See if section exists, if not, show error
+          $sectionTest = $this->section_model->get_section_by_name_and_class($section, $class);
+          if (empty($sectionTest)) {
+            $errors = "Sections were entered that do not exist.";
+          } else {
+            //Save student
+            $existsTest = $this->student_model->student_exists_in_class($name, $class);
+            if (empty($existsTest)) {
+              $this->class_model->add_student_import($class, $name, $section);
+            }
+          }
+        }
+      }
+      if ($errors != "") {
+        $this->session->set_flashdata("upload_students_error", $errors);
+      }
+      redirect(site_url("classes/view/".$class));
     }
 
     /**

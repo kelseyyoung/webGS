@@ -35,8 +35,11 @@
     }
 
     public function match_section_to_student($sid, $sectionid) {
-      $ret = $this->db->get_where("wgsDB_section_students", array("section_id" => $sectionid, "student_id" => $sid));
-      return $ret->row_array();
+      return $this->db->get_where("wgsDB_section_students", array("section_id" => $sectionid, "student_id" => $sid))->row_array();
+    }
+
+    public function get_section_by_name_and_class($name, $cid) {
+      return $this->db->get_where("wgsDB_section", array("name" => $name, "the_class_id" => $cid))->row_array();
     }
 
   }
