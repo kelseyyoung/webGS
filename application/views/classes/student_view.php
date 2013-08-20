@@ -36,6 +36,11 @@
 	      <div class="bar" style="width: 100%;"></div>
 	    </div>
 	  </div>
+          <br/><br/>
+          <div class="alert alert-error hide" id="turnin-errors">
+            <button class="close slide-up" type="button">&times;</button>
+            <span></span>
+          </div>
 	</div>
 	<div class="modal-footer">
 	  <input type="submit" name="submit" class="btn btn-primary" />
@@ -64,28 +69,32 @@
 	  </tr>
 	</thead>
 	<tbody>
-	<?php for ($i = 0; $i < count($assignments); $i++) { ?>
+	<?php foreach ($assignments as $a) { ?>
 	<tr>
-	  <td><?php echo $assignments[$i]['name']; ?></td>
-	  <td><?php echo $assignments[$i]['startDateTime']; ?></td>
-	  <td><?php echo $assignments[$i]['endDateTime']; ?></td>
+	  <td><?php echo $a['name']; ?></td>
+	  <td><?php echo $a['startDateTime']; ?></td>
+	  <td><?php echo $a['endDateTime']; ?></td>
 	  <td>
-	  <?php if (empty($scores[$i])) { ?>
-	  --
-	  <?php } else { 
-	    echo $scores[$i]['score'] . '/' . $assignments[$i]['total_points'];
-	  } ?>
+	  <?php 
+            $echo = "--";
+            foreach ($scores as $s) { 
+              if ($s['assignment_id'] == $a['id']) {
+                $echo = $s['score'].'/'.$a['total_points'];
+              }
+            }
+            echo $echo;
+          ?>
 	  </td>
 	  <td>
 	    <?php 
-	    $startDate = new DateTime($assignments[$i]['startDateTime']);
-	    $endDate = new DateTime($assignments[$i]['endDateTime']);
+	    $startDate = new DateTime($a['startDateTime']);
+	    $endDate = new DateTime($a['endDateTime']);
 	    if ($startDate <= new DateTime('now') && $endDate >= new DateTime('now')) { ?>
 	    <a type="button" class="btn btn-success open-modal" href="#submit-modal" data-toggle="modal">Submit</a>
 	    <?php } else { ?>
 	    <a type="button" class="btn btn-danger" disabled="disabled">Submit</a>
 	    <?php } ?>
-	    <a type="button" class="btn" href="<?php echo site_url('assignments/view_submissions/'.$assignments[$i]['id']); ?>">View Submissions</a>
+	    <a type="button" class="btn" href="<?php echo site_url('assignments/view_submissions/'.$a['id']); ?>">View Submissions</a>
 	  </td>
 	</tr>
 	<?php } ?>
@@ -118,6 +127,12 @@
     });
 
     $("#submit-assignment-form").on("submit", function() {
+      if (!$("#assignment_submission_1").val()) {
+        //No file uploaded, show error
+        $("#turnin-errors > span").text("Please select a file to turn in.");
+        $("#turnin-errors").slideDown();
+        return false;
+      }
       //Show loading bar
       $("#submit-progress").removeClass('hide');
       return true;
@@ -130,6 +145,10 @@
       newClone.find('#assignment_submission_1').attr('name', 'assignment_submission_' + fileCount);
       newClone.find('#assignment_submission_1').attr('id', 'assignment_submission_' + fileCount++);
       $(this).before(newClone);
+    });
+
+    $(".slide-up").click(function() {
+      $(this).parent().slideUp();
     });
 
   });

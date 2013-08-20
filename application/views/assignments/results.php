@@ -10,7 +10,7 @@
       <?php if ($tests != "compile") { ?>
       <p class="lead pull-right">Passed <?php echo ($tests - $failures); ?> out of <?php echo $tests; ?> test cases</p> 
       <?php } else { ?>
-      <p class="lead pull-right">Compile error occured</p>
+      <p class="lead pull-right">An error occured</p>
       <?php } ?>
       <h3>
       <?php echo $score; ?>/<?php echo $total_points; ?>
@@ -31,7 +31,9 @@
       } else { ?>
       <p>No errors to display.</p>
       <?php } ?>
-      <h3>
+      <div class="alert alert-error">
+        <p>WARNING! Refreshing this page will cause an error. To review your hints, click "View Submissions" on your class home page.</p>
+      </div>
     </div>
   </div>
 </div> <!-- end container -->

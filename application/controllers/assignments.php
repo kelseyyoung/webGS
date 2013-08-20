@@ -158,6 +158,7 @@
       }
       $data['score'] = $newScore;
       $score = $this->score_model->get_score($sid, $id);
+      //TODO: foreach's can be cleaned up
       if (!empty($score)) {
 	//Score exists, see if we got a higher one
 	if ($score['score'] < $newScore) {

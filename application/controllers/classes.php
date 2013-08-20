@@ -184,7 +184,29 @@
               $testcaseName .
               " formatter=org.apache.tools.ant.taskdefs.optional.junit.XMLJUnitResultFormatter," .
               $path . "/new/results.xml 2>&1";
-            shell_exec($string);
+            //shell_exec($string);
+            $specs = array(
+              0 => array("pipe", "r"),
+              1 => array("pipe", "w"),
+              2 => array("pipe", "w")
+            );
+            $pipes = array();
+            $endtime = time()+10; //Allow 10 seconds before timeout
+            $process = proc_open($string, $specs, $pipes);
+            if (is_resource($process)) {
+              do {
+                $status = proc_get_status($process);
+                if (!$status['running']) {
+                  break;
+                }
+                $timeleft = $endtime - time();
+              } while ($timeleft > 0);
+              if ($timeleft <= 0) {
+                $this->session->set_flashdata('errors', "Your java program timed out.\nHint: check for infinite loops.");
+              }
+            } else {
+              $this->session->set_flashdata("errors", "An unexpected error occurred. Your java file could not be run.");
+            }
             //Redirect, set flash data first
             $this->session->set_flashdata('files', $files);
             $this->session->set_flashdata('path', $path);

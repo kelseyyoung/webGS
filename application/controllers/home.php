@@ -65,8 +65,8 @@ $xmlentities = array(
           set_cookie('CASAUTHOK', $_COOKIE['CASAUTHOK']);
 
           $instructor = $this->instructor_model->get_instructor_by_username($this->session->userdata('netid'));
-          if ($instructor) {
-          //if( false) {
+          //if ($instructor) {
+          if( false) {
             $this->session->set_userdata('type', 'instructor');
             $this->session->set_userdata('user_id', $instructor['id']);
             redirect(site_url('instructors/view'));
@@ -81,7 +81,7 @@ $xmlentities = array(
               $this->session->set_userdata('type', 'student');
               $this->session->set_userdata('user_id', $student['id']);
             }
-            chmod_R(upload_path().'127A_Fall', 0777, 0777);
+            chmod_R(upload_path().'127A_Summer', 0777, 0777);
             redirect(site_url('students/view'));
           }
         }
