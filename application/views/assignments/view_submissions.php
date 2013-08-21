@@ -41,7 +41,7 @@
       </table>
     </div>
   </div>
-</div> <!--end container-->
+</div> <!--End container-fluid-->
 
 <?php include_once(view_url().'templates/linked_js.php'); ?>
 

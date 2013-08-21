@@ -38,4 +38,4 @@
         <?php } ?>
       </div>
     </div>
-    <div class="container-fluid">
+    <div class="container-fluid" id="wrap">

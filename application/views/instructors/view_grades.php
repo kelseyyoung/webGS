@@ -36,7 +36,7 @@
       <!--File reading modal-->
       <div class="modal hide fade" id="file-contents-modal">
 	<div class="modal-header">
-	  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+	  <button type="button" class="close ignore-slide" data-dismiss="modal" aria-hidden="true">&times;</button>
 	  <h3 id="filename"></h3>
 	</div>
 	<div class="modal-body">
@@ -146,7 +146,6 @@
       var total = $(this).parent().prev().text().split('/')[1].trim();
       var username =  "<?php echo $student['username']; ?>";
       var assignment = $(this).parent().prev().prev().find('.assignment-id').val();
-      console.log(assignment);
       $("#new-grade").val(currGrade);
       $("#total").text("/ " + total);
       $("#student").val(username);

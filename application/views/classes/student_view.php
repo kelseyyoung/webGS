@@ -18,7 +18,7 @@
 	<h3>Submit Assignment</h3>
       </div>
       <?php $attr = array('id' => 'submit-assignment-form');
-	echo form_open_multipart('classes/submit_assignment/'. $this->session->userdata('user_id'), $attr); ?>
+	echo form_open_multipart('classes/submit_assignment/', $attr); ?>
 	<div class="modal-body">
 	  <div id="first-upload" class="fileupload fileupload-new text-center" data-provides="fileupload">
 	    <span class="btn btn-file">
@@ -109,6 +109,7 @@
     </div> <!-- End assignment table -->
   </div>
 </div>
+</div><!--End of container-fluid-->
 
 <?php include_once(view_url().'templates/linked_js.php'); ?>
 

@@ -76,7 +76,7 @@
             <?php if (form_error('testcase_file')) { ?>
             <span class="help-block"><?php echo form_error('testcase_file'); ?></span>
             <?php } ?>
-	    <button id="add-file" type="button" class="btn btn-success"><i class="icon-plus"></i> Add JUnit File</button>
+	    <button id="add-file" type="button" class="btn btn-success"><i class="icon-plus"></i> Add File</button>
           </div>
         </div>
 	<div class="control-group <?php if (form_error('main_testcase_name')) { ?>error<?php } ?>">

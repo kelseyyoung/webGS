@@ -65,8 +65,8 @@ $xmlentities = array(
           set_cookie('CASAUTHOK', $_COOKIE['CASAUTHOK']);
 
           $instructor = $this->instructor_model->get_instructor_by_username($this->session->userdata('netid'));
-          //if ($instructor) {
-          if( false) {
+          if ($instructor) {
+          //if( false) {
             $this->session->set_userdata('type', 'instructor');
             $this->session->set_userdata('user_id', $instructor['id']);
             redirect(site_url('instructors/view'));

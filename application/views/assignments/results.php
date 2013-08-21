@@ -31,12 +31,9 @@
       } else { ?>
       <p>No errors to display.</p>
       <?php } ?>
-      <div class="alert alert-error">
-        <p>WARNING! Refreshing this page will cause an error. To review your hints, click "View Submissions" on your class home page.</p>
-      </div>
     </div>
   </div>
-</div> <!-- end container -->
+</div> <!-- End container-fluid -->
 
 <?php include_once(view_url() . 'templates/linked_js.php'); ?>
 

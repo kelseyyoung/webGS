@@ -35,7 +35,7 @@
     <?php } ?>
     </div>
   </div>
-</div>
+</div><!--End of container-fluid-->
 
 <?php include_once(view_url().'templates/linked_js.php'); ?>
 

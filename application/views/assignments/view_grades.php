@@ -123,7 +123,8 @@
       </div>
     </div>
   </div>
-</div> <!--End of container -->
+</div>
+</div> <!--End container-fluid -->
 
 <?php include_once(view_url(). 'templates/linked_js.php'); ?>
 

@@ -255,12 +255,13 @@
       if (!data.error) {
         //add row to students table
 	var table = $("#students table#table-all tbody");
+	var section = $("#student-section").val();
         $(table).append("<tr><td>" + data.username + 
 	  "</td><td>" +
+          section + "</td><td>" +
 	  "<a type='button' class='btn' href='#'>View Grades</a>" + 
 	  "<a type='button' class='btn btn-danger remove-student' href='<?php echo site_url('classes/remove_student/'. $class['id']); ?>/" + data.id + "'>Remove Student</a>" +
 	  "</td></tr>");
-	var section = $("#student-section").val();
 	table = $("#students table#table-"  + section + " tbody"); 
 	$(table).append("<tr><td>" + data.username + 
 	  "</td><td>" +
@@ -325,7 +326,10 @@
   $(document).on('click', '.remove-student', function(e) {
     e.preventDefault();
     var button = $(this);
-    var name = $(button).parent().prev().text();
+    var name = $(button).parent().prev().prev().text();
+    if (!name) {
+      name = $(button).parent().prev().text();
+    }
     var csrf = $("input[name=webGS_csrf_token]")[0];
     $.post($(this).attr('href'), {"webGS_csrf_token": $(csrf).val()}, function(data) {
       data = $.parseJSON(data);

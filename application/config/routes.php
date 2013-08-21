@@ -66,6 +66,10 @@ $route['unauthorized'] = 'unauthorized';
 $route['login'] = 'login';
 //Logout
 $route['logout'] = 'logout';
+//Static pages for footer links
+$route['about'] = 'footer/about';
+$route['help'] = 'footer/help';
+$route['contact'] = 'footer/contact';
 //Default = home page
 $route['default_controller'] = 'home/index';
 //$route['404_override'] = '';

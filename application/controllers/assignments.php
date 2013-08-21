@@ -91,7 +91,7 @@
 	    //Remove test file from uploads directory
 	    unlink(upload_path().$value['name']);
 	  }
-	  redirect(site_url('instructors/view/'.$this->session->userdata("user_id")));
+	  redirect(site_url('instructors/view/'));
 	}
       } 
     }
@@ -101,7 +101,7 @@
      * STUDENTS & INSTRUCTORS
      * Shows results of student's assignment run against test case
      */
-    public function results($sid) {
+    public function results() {
       $user = $this->session->userdata('user_id');
       if (!$user) {
 	redirect(site_url('unauthorized'));
@@ -115,6 +115,16 @@
         $errors = $this->session->flashdata('errors');
       }
       if (!$errors) {
+        //See if results.xml exists
+        //If it doesn't an error occurred or the refreshed the page
+        if (!file_exists($path."/new/results.xml")) {
+          $data['title'] = "Submission Results Error";
+
+          $this->load->view('templates/header', $data);
+          $this->load->view('assignments/results_error');
+          $this->load->view('templates/footer');
+          return;
+        }
         //Get results from xml file
         $xml = new DOMDocument();
         $xml->load($path."/new/results.xml");
@@ -157,13 +167,13 @@
         $newScore = 0;
       }
       $data['score'] = $newScore;
-      $score = $this->score_model->get_score($sid, $id);
+      $score = $this->score_model->get_score($this->session->userdata("user_id"), $id);
       //TODO: foreach's can be cleaned up
       if (!empty($score)) {
 	//Score exists, see if we got a higher one
 	if ($score['score'] < $newScore) {
 	  //Update
-	  $this->score_model->update_score($sid, $id, $newScore);
+	  $this->score_model->update_score($this->session->userdata("user_id"), $id, $newScore);
 	  //Move current files to old
 	  foreach(glob($path.'/current/*') as $file) {
 	    if (is_file($file)) {
@@ -182,7 +192,7 @@
 	}
       } else {
 	//Score doesn't exist, create new one
-	$this->score_model->submit_score($sid, $id, $newScore);
+	$this->score_model->submit_score($this->session->userdata("user_id"), $id, $newScore);
 	foreach ($files as $file) {
 	  //Move files to 'current'
 	  rename($path .'/new/'.$file, $path.'/current/'.$file.'.'.date("Y-m-d_H:i:s"));
@@ -195,7 +205,7 @@
 	}
       }
       //Create submission record
-      $this->submission_model->create_submission($newScore, $failureArray, $sid, $assignment['id']);
+      $this->submission_model->create_submission($newScore, $failureArray, $this->session->userdata("user_id"), $assignment['id']);
 
       $data['title'] = "Submission Results";
       $data['messages'] = $failureArray;
@@ -317,7 +327,7 @@
                 unlink(upload_path().'/'.$value['name']);
               }
             }
-            redirect(site_url('instructors/view/'.$this->session->userdata("user_id")));   
+            redirect(site_url('instructors/view/'));   
           }
         }
       } else {
@@ -487,7 +497,13 @@
         $this->form_validation->set_message("file_exists", "The main testcase must be a .java file.");
         return false;
       }
-      if (!empty($_FILES)) {
+      $noFiles = false;
+      foreach ($_FILES as $key => $value) {
+        if (!$value['name']) {
+          $noFiles = true;
+        }
+      }
+      if ($noFiles) {
         //Nothing uploaded
         //Look in testcases directory
         $pathData = preg_split('/,/', $pathData);
@@ -510,7 +526,7 @@
         }
         return true;
       } else {
-        //Look in files
+        //Something was uploaded, so look in files
         //Same as testcase_matches 
         $ok = false;
         foreach ($_FILES as $key => $value) {

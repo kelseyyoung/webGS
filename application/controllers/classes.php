@@ -94,11 +94,11 @@
     }
 
     /**
-     * url: classes/submit_assignment/[student id]
+     * url: classes/submit_assignment
      * STUDENTS & INSTRUCTORS
      * Submits an assignment
      */
-    public function submit_assignment($id) {
+    public function submit_assignment() {
       $user = $this->session->userdata('user_id');
       if (!$user) {
 	redirect(site_url('unauthorized'));
@@ -107,7 +107,7 @@
       $class = str_replace(" ", "_", $this->input->post('class_name'));
       $assignment = str_replace(" ", "_", $this->input->post('assignment_name'));
       $sections = $this->section_model->get_sections_by_class_name($this->input->post('class_name'));
-      $student = $this->student_model->get_students($id);
+      $student = $this->student_model->get_students($this->session->userdata("user_id"));
       foreach($sections as $s) {
 	$ret = $this->section_model->match_section_to_student($this->session->userdata('user_id'), $s['id']);
 	if (!empty($ret)) {
@@ -128,16 +128,19 @@
       $this->load->helper('form');
 
       $canPass = true;
+      $errStr = "";
       foreach ($_FILES as $key => $value) {
         $fName = $value['name'];
         if (substr($fName, -5) != ".java") {
           $canPass = false;
+          $errStr = "Only .java files are allowed to be uploaded";
         }
         $contents = file_get_contents($value['tmp_name']);
         if (  strpos($contents, "Process") ||
               strpos($contents, "Runtime") ||
               strpos($contents, "getRuntime")) {
           $canPass = false;
+          $errStr = "The uploaded files contain prohibited code";
         }
       }
       if ($canPass) {
@@ -170,7 +173,7 @@
             $this->session->set_flashdata('path', $path);
             $this->session->set_flashdata('assignment_id', $aObj['id']);
             $this->session->set_flashdata('errors', $output);
-            redirect(site_url('assignments/results/'.$id));
+            redirect(site_url('assignments/results/'));
           } else {
             //Run testcase
             $testcase = $this->testcase_model->get_testcases_by_assignment($aObj['id']);
@@ -191,7 +194,7 @@
               2 => array("pipe", "w")
             );
             $pipes = array();
-            $endtime = time()+10; //Allow 10 seconds before timeout
+            $endtime = time()+20; //Allow 20 seconds before timeout
             $process = proc_open($string, $specs, $pipes);
             if (is_resource($process)) {
               do {
@@ -215,7 +218,7 @@
           }
         }
       } else {
-        $this->session->set_flashdata('error', "The uploaded files contain prohibited code.");
+        $this->session->set_flashdata('error', $errStr);
         $c = $this->class_model->get_class_by_name($this->input->post('class_name'));
         redirect(site_url('classes/student_view/'.$c['id']));
       }
@@ -383,9 +386,9 @@
 	mkdir(upload_path().$classDir);
 	$sections = explode(",", $this->input->post('sections'));
 	foreach ($sections as $s) {
-	  mkdir(upload_path().$classDir.'/'.$s);
+	  mkdir(upload_path().$classDir.'/'.str_replace(" ", "_", $s));
 	}
-	redirect(site_url('instructors/view/'.$this->session->userdata('user_id')));
+	redirect(site_url('instructors/view/'));
       } 
     }
 

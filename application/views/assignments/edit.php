@@ -71,7 +71,7 @@
             <?php if (form_error('testcase_file')) { ?>
             <span class="help-block"><?php echo form_error('testcase_file'); ?></span>
             <?php } ?>
-            <button id="add-file" type="button" class="btn btn-success"><i class="icon-plus"></i> Add JUnit File</button>
+            <button id="add-file" type="button" class="btn btn-success"><i class="icon-plus"></i> Add File</button>
             <p id="current-files">Leave empty to keep current files.</p>
           </div>
         </div>
@@ -137,7 +137,7 @@
   });
 
   $("input#num_testcases, input#points_per_testcase").keyup(function() {
-    var count = parseInt($(this).val());
+    var count = parseInt($("input#num_testcases").val());
     var worth = parseInt($("input#points_per_testcase").val());
     if ((!isNaN(count)) && (!isNaN(worth))) {
       $("input#total_points").val(count*worth);
