@@ -85,6 +85,7 @@
 	$data['class'] = $this->class_model->get_classes($id);
 	$data['assignments'] = $this->assignment_model->get_assignments_by_class($id);
 	$data['scores'] = $this->score_model->get_scores_by_student($id, $this->session->userdata('user_id'));
+        $data['section'] = $this->section_model->get_section_for_student($this->session->userdata('user_id'), $id);
 	$this->load->view('templates/header', $data);
 	$this->load->view('classes/student_view', $data);
 	$this->load->view('templates/footer');

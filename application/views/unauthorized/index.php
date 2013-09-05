@@ -6,6 +6,7 @@
     <div class="span8 offset2 text-center">
       <h1>Whoops!</h1>
       <p>Sorry, you're unauthorized to view that page</p>
+      <p>Not logged in? Click <a href="http://webgs.cs.arizona.edu">here</a>.</p>
     </div>
   </div>
 </div>

@@ -4,7 +4,7 @@
         <div class="container-fluid">
           <div class="row-fluid">
             <div class="span8">
-              <p>WebGS Version 1.0</p>
+              <p>WebGS<sub><small>BETA</small></sub> Version 1.0</p>
               <p>Developed By Kelsey Young</p>
               <p>Supported by the <a href="http://cs.arizona.edu">University of Arizona Computer Science Department</a></p>
             </div>

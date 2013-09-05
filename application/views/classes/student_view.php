@@ -5,7 +5,7 @@
 
 <div class="row-fluid">
   <div class="span12">
-    <h1><?php echo $class['name']; ?></h1>
+    <h1><?php echo $class['name']; ?> - Section <?php echo $section[0]['name']; ?></h1>
   </div>
 </div>
 <hr>
@@ -92,7 +92,7 @@
 	    if ($startDate <= new DateTime('now') && $endDate >= new DateTime('now')) { ?>
 	    <a type="button" class="btn btn-success open-modal" href="#submit-modal" data-toggle="modal">Submit</a>
 	    <?php } else { ?>
-	    <a type="button" class="btn btn-danger" disabled="disabled">Submit</a>
+	    <a type="button" class="btn btn-danger" disabled="disabled" rel="tooltip" data-original-title="Submission Closed">Submit</a>
 	    <?php } ?>
 	    <a type="button" class="btn" href="<?php echo site_url('assignments/view_submissions/'.$a['id']); ?>">View Submissions</a>
 	  </td>
@@ -120,6 +120,8 @@
   var clone = $("#first-upload").clone();
 
   $(document).ready(function() {
+
+    $("[rel='tooltip']").tooltip();
 
     $(".open-modal").click(function() {
       //Populate assignment field on click

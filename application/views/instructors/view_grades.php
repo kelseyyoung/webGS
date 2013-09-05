@@ -90,7 +90,9 @@
 		</ul>
 	      </div>
               <?php } ?>
+              <?php if ($echo !== "--") { ?>
               <button class="change-grade btn" type="button">Change Grade</button>
+              <?php } ?>
 	    </td>
 	  </tr>
 	<?php } ?>

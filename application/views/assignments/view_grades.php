@@ -77,7 +77,11 @@
 		?>
 		</td>
 		<td>
+                <?php if ($echo !== "--") { ?>
 		  <button class="change-grade btn" type="button">Change Grade</button>
+                <?php } else { ?>
+                  No actions
+                <?php } ?>
 		</td>
 	      </tr>
 	    <?php } ?>

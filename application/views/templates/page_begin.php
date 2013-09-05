@@ -4,7 +4,7 @@
   <body>
     <div class="navbar">
       <div class="navbar-inner">
-        <a class="brand" href="<?php echo base_url(); ?>">WebGS</a>
+        <a class="brand" href="<?php echo base_url(); ?>">WebGS<sub><small>BETA</small></sub></a>
         <?php if ($this->session->userdata("user_id")) { ?>
         <a href="<?php echo base_url()."logout"; ?>" class="btn btn-danger pull-right">Logout</a>
         <ul class="nav">
