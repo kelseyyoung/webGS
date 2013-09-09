@@ -382,8 +382,8 @@
       $data['assignment'] = $assignment;
       $data['scores'] = $scores;
       $data['students'] = $students;
-      $data['all_sections'] = $this->section_model->get_sections_by_class($id);
-      $data['student_sections'] = $this->section_model->get_students_by_class_per_sections($id);
+      $data['all_sections'] = $this->section_model->get_sections_by_class($class_id);
+      $data['student_sections'] = $this->section_model->get_students_by_class_per_sections($class_id);
       $data['class'] = $this->class_model->get_classes($class_id);
       $data['title'] = "View Grades";
       $this->load->view('templates/header', $data);
