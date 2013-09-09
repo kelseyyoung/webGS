@@ -57,7 +57,7 @@
           </div>
         </div>
         <div class="control-group <?php if (form_error('testcase_file')) { ?>error<?php } ?>">
-          <label class="control-label" for="testcase_file">JUnit Files: </label>
+          <label class="control-label" for="testcase_file">Test Files: </label>
           <div class="controls">
             <div id="first-upload" class="fileupload fileupload-new" data-provides="fileupload">
               <span class="btn btn-file">
