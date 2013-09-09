@@ -5,7 +5,7 @@
 
   <div class="row-fluid">
     <div class="span8 offset2">
-      <p>To submit a bug report, send an email to kelseyyoung4@gmail.com with the title "WebGS Bug Report" and the following information:</p>
+      <p>To submit a bug report, send an email to webgs.contact@gmail.com with the title "WebGS Bug Report" and the following information:</p>
       <ul>
         <li>URL the bug occurred on</li>
         <li>Steps you took to expose the bug</li>
